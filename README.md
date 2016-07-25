@@ -1,5 +1,6 @@
 # Rsa Demo
 
+Rsa算法请参看[RSA算法][1]
 ## 公私钥
 > 公私钥（java和js相同）
 ### 公私钥的javascript代码
@@ -43,3 +44,6 @@ LpsvBoKDHlpRsnAsC5lqU198lr8G9t2P0mHI1DAY7oNk6mJ+qd8JYq2X3yyutZL7K2dERBJSATqmYaRg
 ```
 ### Js解密后
 Javascript中文
+
+
+[1]: http://baike.baidu.com/link?url=xmptW-i-04zzpBeSEhxRdUu33Xp_osV7i0e2MGTNbPzh3LME6S_ERt4ViHGp0D_RInCP4PSfNpNlMeSdsCzmTGbqGOrj3GQX0tdo8v3-16V59rN4Xng8FgSLJdh1L1va
