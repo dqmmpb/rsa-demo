@@ -2,8 +2,9 @@
 
 > **RSA算法**的相关知识可参看：  
 百度百科[RSA算法][1]  
-知乎[RSA算法的加密原理是什么][2]  
-[RSA算法原理（一）——阮一峰的网络日志][3]
+知乎[RSA算法的加密原理是什么？][2]  
+阮一峰的网络日志[RSA算法原理（一）][3]
+阮一峰的网络日志[RSA算法原理（二）][4]
 
 ## 公私钥
 > 公私钥（java和js相同）
@@ -50,6 +51,7 @@ LpsvBoKDHlpRsnAsC5lqU198lr8G9t2P0mHI1DAY7oNk6mJ+qd8JYq2X3yyutZL7K2dERBJSATqmYaRg
 Javascript中文
 
 
-[1]: http://baike.baidu.com/link?url=xmptW-i-04zzpBeSEhxRdUu33Xp_osV7i0e2MGTNbPzh3LME6S_ERt4ViHGp0D_RInCP4PSfNpNlMeSdsCzmTGbqGOrj3GQX0tdo8v3-16V59rN4Xng8FgSLJdh1L1va
-[2]: https://www.zhihu.com/question/25038691
+[1]: http://baike.baidu.com/link?url=xmptW-i-04zzpBeSEhxRdUu33Xp_osV7i0e2MGTNbPzh3LME6S_ERt4ViHGp0D_RInCP4PSfNpNlMeSdsCzmTGbqGOrj3GQX0tdo8v3-16V59rN4Xng8FgSLJdh1L1va "RSA算法——百度百科"
+[2]: https://www.zhihu.com/question/25038691 "RSA算法的加密原理是什么？——知乎"
 [3]: http://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html "RSA算法原理（一）——阮一峰的网络日志"
+[4]: http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html "RSA算法原理（二）——阮一峰的网络日志"
