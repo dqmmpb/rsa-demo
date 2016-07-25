@@ -16,9 +16,15 @@
   <link type="image/x-icon" rel="shortcut icon" href="favicon.ico">
   
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     .panel {
       background: #ddd;
       padding: 10px;
+      margin: 10px;
     }
     .title {
       font-weight: bold;
@@ -30,12 +36,29 @@
     .value {
       word-break: break-word;
     }
+    .warning {
+      color: white;
+      font-size: 80%;
+      background: orange;
+    }
   </style>
  
 </head>
 <body>
  
   <div class="page-group">
+  
+   <div class="panel">
+     <div>
+       <button id="generate" type="button">生成密钥</button>
+       
+     </div>
+     <div class="warning">生成的新密钥会将"js加密，js解密"模块中的文本重新加密解密，其他模块中的不会改变</div>
+     <label>公钥</label>
+     <div id="publicKey" class="value"></div>
+     <label>私钥</label>
+     <div id="privateKey" class="value"></div>
+   </div>
   
    <div id="encryptJs_decryptJs" class="panel">
      <div class="title">js加密，js解密</div>
@@ -66,6 +89,7 @@
     <label>Js解密后</label>
     <div class="value afterDecrypt"></div>
   </div>
+  
   
   </div>
 

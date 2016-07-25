@@ -47,5 +47,44 @@ $(function() {
   $('#encryptJs_decryptJs2').find('.plainText').text(plainText);
   $('#encryptJs_decryptJs2').find('.afterEncrypt').text(encrypted);
   $('#encryptJs_decryptJs2').find('.afterDecrypt').text(decrypted);
+  
+/*  var rsa = new JSEncrypt();
+  console.log(rsa);
+  var privateKey = rsa.getPrivateKeyB64();
+  console.log(privateKey);
+  var publicKey = rsa.getPublicKeyB64();
+  console.log(publicKey);*/
 
+  function reEncrypt() {
+    
+    var NEW_RSA_KEY = $('#publicKey').text();
+    var NEW_PRI_KEY = $('#privateKey').text();
+    // Encrypt with the public key...
+    var encrypt = new JSEncrypt();
+    encrypt.setPublicKey(NEW_RSA_KEY);
+    // Decrypt with the private key...
+    var decrypt = new JSEncrypt();
+    decrypt.setPrivateKey(NEW_PRI_KEY);
+
+    // js加密 js解密
+    var plainText = 'Javascript中文';
+    var encrypted = encrypt.encrypt(plainText);
+    var decrypted = decrypt.decrypt(encrypted);
+    console.log('加密明文：' + plainText);
+    console.log('Js加密后：' + encrypted);
+    console.log('Js解密后：' + decrypted);
+    
+    $('#encryptJs_decryptJs').find('.plainText').text(plainText);
+    $('#encryptJs_decryptJs').find('.afterEncrypt').text(encrypted);
+    $('#encryptJs_decryptJs').find('.afterDecrypt').text(decrypted);
+  }
+  
+  $('#generate').click(function() {
+    var rsa = new JSEncrypt();
+    var publicKey = rsa.getPublicKeyB64();
+    var privateKey = rsa.getPrivateKeyB64();
+    $('#publicKey').text(publicKey);
+    $('#privateKey').text(privateKey);
+    reEncrypt();
+  });
 });
