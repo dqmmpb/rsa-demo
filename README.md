@@ -1,6 +1,6 @@
 # package rsa
 
-@(js加密，js解密)[java加密，js解密|js加密，js解密|Markdown]
+[TOC]
 
 ## js加密，js解密
 ### 加密明文
