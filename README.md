@@ -11,8 +11,6 @@ ooZvZoyRzOFvHPEMidBuhE7vl8PxbgZYtJmH+2bqb7E9vPoGVpeFdiIb65EJ5W7fweWX8YZ4775B64/w
 ### Js解密后
 Javascript中文
 
--------------------
-
 ## java加密，js解密
 
 > ### 加密明文
@@ -23,8 +21,6 @@ Hj3MnvCmFw6o+ggqLadnoMca2AJCedicY5CSoF0Q1CPZn6EIidqjDuBD8++2IXEFD+RTWutvhiSSce8O
 ```
 ### Js解密后
 Java中文2
-
--------------------
 
 ## js加密，js解密
 
