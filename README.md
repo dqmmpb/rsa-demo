@@ -1,6 +1,8 @@
 # Rsa Demo
 
-Rsa算法请参看[RSA算法][1]
+RSA算法的相关知识
+> 可参看百度百科[RSA算法][1]
+> 知乎[RSA算法的加密原理是什么][2]
 ## 公私钥
 > 公私钥（java和js相同）
 ### 公私钥的javascript代码
@@ -47,3 +49,4 @@ Javascript中文
 
 
 [1]: http://baike.baidu.com/link?url=xmptW-i-04zzpBeSEhxRdUu33Xp_osV7i0e2MGTNbPzh3LME6S_ERt4ViHGp0D_RInCP4PSfNpNlMeSdsCzmTGbqGOrj3GQX0tdo8v3-16V59rN4Xng8FgSLJdh1L1va
+[2]: https://www.zhihu.com/question/25038691
