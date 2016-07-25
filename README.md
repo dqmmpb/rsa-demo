@@ -18,6 +18,8 @@ Java中文2
 ###### 加密明文
 Javascript中文
 ###### Js加密后
+```javascript
 LpsvBoKDHlpRsnAsC5lqU198lr8G9t2P0mHI1DAY7oNk6mJ+qd8JYq2X3yyutZL7K2dERBJSATqmYaRgnQgWVlMjlOi+j/Ob5kcaqrPVXLFJpgtqLYgJ2Qq7ecw3LrPTAoHNqsReZ7ZzYkWeMkqQzaPuAAT9UmJI1KG7iyOBNFY=
+```
 ###### Js解密后
 Javascript中文
