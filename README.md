@@ -2,7 +2,8 @@
 
 > **RSA算法**的相关知识可参看：  
 百度百科[RSA算法][1]  
-知乎[RSA算法的加密原理是什么][2]
+知乎[RSA算法的加密原理是什么][2]  
+[RSA算法原理（一）——阮一峰的网络日志][3]
 
 ## 公私钥
 > 公私钥（java和js相同）
@@ -51,3 +52,4 @@ Javascript中文
 
 [1]: http://baike.baidu.com/link?url=xmptW-i-04zzpBeSEhxRdUu33Xp_osV7i0e2MGTNbPzh3LME6S_ERt4ViHGp0D_RInCP4PSfNpNlMeSdsCzmTGbqGOrj3GQX0tdo8v3-16V59rN4Xng8FgSLJdh1L1va
 [2]: https://www.zhihu.com/question/25038691
+[3]: http://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html "RSA算法原理（一）——阮一峰的网络日志"
