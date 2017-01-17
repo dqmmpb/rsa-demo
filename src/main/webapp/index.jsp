@@ -62,7 +62,7 @@
   
    <div id="encryptJs_decryptJs" class="panel">
      <div class="title">js加密，js解密</div>
-     <label>加密明文</label>
+     <label>明文</label>
      <div class="value plainText"></div>
      <label>Js加密后</label>
      <div class="value afterEncrypt"></div>
@@ -72,7 +72,7 @@
    
    <div id="encryptJava_decryptJs" class="panel">
     <div class="title">java加密，js解密</div>
-    <label>加密明文</label>
+    <label>明文</label>
     <div class="value plainText"></div>
     <label>Java加密后</label>
     <div class="value afterEncrypt"></div>
@@ -82,7 +82,7 @@
   
 <%--  <div id="encryptJs_decryptJs2" class="panel">
     <div class="title">js加密，js解密</div>
-    <label>加密明文</label>
+    <label>明文</label>
     <div class="value plainText"></div>
     <label>Js加密后</label>
     <div class="value afterEncrypt"></div>

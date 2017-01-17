@@ -79,7 +79,7 @@ public class RSAUtilTest {
   public void testEncryptJavaAndDecryptJava() {
     try {
       String plainText = "Java中文";
-      System.out.println("加密明文：" + plainText);
+      System.out.println("明文：" + plainText);
       byte[] en = RSAUtil.encrypt(plainText, publicKey);
       String encryptedText = new String(Base64.encode(en));
       System.out.println("Java加密后：" + encryptedText);
@@ -103,7 +103,7 @@ public class RSAUtilTest {
     try {
       String plainText = "Java中文2";
       String encryptedText = "Hj3MnvCmFw6o+ggqLadnoMca2AJCedicY5CSoF0Q1CPZn6EIidqjDuBD8++2IXEFD+RTWutvhiSSce8Ot09n7JifwWFc3g5hcorHDM/e9MsC0PMxG32AMyZnqMxX+1T0xXnlHI8lr+0q4rNtGZ1f0uaE/ZO3MDzqClmamQO5I/0=";
-      System.out.println("加密明文：" + plainText);
+      System.out.println("明文：" + plainText);
       System.out.println("Java加密后：" + encryptedText);
       byte[] en = Base64.decode(encryptedText);
       byte[] re = RSAUtil.decrypt(en, privateKey);
@@ -126,7 +126,7 @@ public class RSAUtilTest {
     try {
       String plainText = "Javascript中文";
       String encryptedText = "LpsvBoKDHlpRsnAsC5lqU198lr8G9t2P0mHI1DAY7oNk6mJ+qd8JYq2X3yyutZL7K2dERBJSATqmYaRgnQgWVlMjlOi+j/Ob5kcaqrPVXLFJpgtqLYgJ2Qq7ecw3LrPTAoHNqsReZ7ZzYkWeMkqQzaPuAAT9UmJI1KG7iyOBNFY=";
-      System.out.println("加密明文：" + plainText);
+      System.out.println("明文：" + plainText);
       System.out.println("Js加密后：" + encryptedText);
       byte[] en = Base64.decode(encryptedText);
       byte[] re = RSAUtil.decrypt(en, privateKey);
