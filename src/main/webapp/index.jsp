@@ -34,7 +34,7 @@
       color: red;
     }
     .value {
-      word-break: break-word;
+      word-break: break-all;
     }
     .warning {
       color: white;
@@ -74,13 +74,13 @@
     <div class="title">java加密，js解密</div>
     <label>加密明文</label>
     <div class="value plainText"></div>
-    <label>Js加密后</label>
+    <label>Java加密后</label>
     <div class="value afterEncrypt"></div>
     <label>Js解密后</label>
     <div class="value afterDecrypt"></div>
   </div>
   
-  <div id="encryptJs_decryptJs2" class="panel">
+<%--  <div id="encryptJs_decryptJs2" class="panel">
     <div class="title">js加密，js解密</div>
     <label>加密明文</label>
     <div class="value plainText"></div>
@@ -88,7 +88,7 @@
     <div class="value afterEncrypt"></div>
     <label>Js解密后</label>
     <div class="value afterDecrypt"></div>
-  </div>
+  </div>--%>
   
   
   </div>

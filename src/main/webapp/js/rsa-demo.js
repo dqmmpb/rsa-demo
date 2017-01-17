@@ -36,7 +36,7 @@ $(function() {
   $('#encryptJava_decryptJs').find('.afterEncrypt').text(encrypted);
   $('#encryptJava_decryptJs').find('.afterDecrypt').text(decrypted);
 
-  // js加密 js解密
+/*  // js加密 js解密
   plainText = 'Javascript中文';
   encrypted = 'LpsvBoKDHlpRsnAsC5lqU198lr8G9t2P0mHI1DAY7oNk6mJ+qd8JYq2X3yyutZL7K2dERBJSATqmYaRgnQgWVlMjlOi+j/Ob5kcaqrPVXLFJpgtqLYgJ2Qq7ecw3LrPTAoHNqsReZ7ZzYkWeMkqQzaPuAAT9UmJI1KG7iyOBNFY=';
   decrypted = decrypt.decrypt(encrypted);
@@ -47,7 +47,7 @@ $(function() {
   $('#encryptJs_decryptJs2').find('.plainText').text(plainText);
   $('#encryptJs_decryptJs2').find('.afterEncrypt').text(encrypted);
   $('#encryptJs_decryptJs2').find('.afterDecrypt').text(decrypted);
-  
+  */
 /*  var rsa = new JSEncrypt();
   console.log(rsa);
   var privateKey = rsa.getPrivateKeyB64();
