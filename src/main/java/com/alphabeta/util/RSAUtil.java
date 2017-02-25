@@ -15,6 +15,7 @@ import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.Cipher;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.provider.JCERSAPublicKey;
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
 
@@ -44,12 +45,12 @@ public class RSAUtil {
     return kp;
   }
 
-/*  public static PublicKey getPublicRSAKey(String modulus, String exponent) throws Exception {
+  public static PublicKey getPublicRSAKey(String modulus, String exponent) throws Exception {
     RSAPublicKeySpec spec = new RSAPublicKeySpec(new BigInteger(modulus, 16), new BigInteger(exponent, 16));
     KeyFactory kf = KeyFactory.getInstance("RSA", pro);
     return kf.generatePublic(spec);
   }
-*/
+
   public static PublicKey getPublicRSAKey(String key) throws Exception {
     X509EncodedKeySpec x509 = new X509EncodedKeySpec(Base64.decode(key));
     KeyFactory kf = KeyFactory.getInstance("RSA", pro);
@@ -77,33 +78,39 @@ public class RSAUtil {
   }
 
   public static void main(String[] args) throws Exception {
-    // KeyPair kp = generateKeyPair();
-    //
-    // PrivateKey privateKey = kp.getPrivate();
-    // byte[] prk = privateKey.getEncoded();
-    // String privateKeyStr = new String(Base64.encode(prk));
-    //
-    // PublicKey publicKey = kp.getPublic();
-    // byte[] pbk = publicKey.getEncoded();
-    // String publicKeyStr = new String(Base64.encode(pbk));
-    //
-    // System.out.println("PrivateKey: " + privateKey);
-    // System.out.println("PublicKey: " + publicKey);
-    //
-    // System.out.println("pstr:" + privateKeyStr);
-    // System.out.println("publicstr:" + publicKeyStr);
+    KeyPair kp = generateKeyPair();
 
-    // String modulus =
-    // ((BCRSAPublicKey)publicKey).getModulus().toString(16);
-    // String exponent =
-    // ((BCRSAPublicKey)publicKey).getPublicExponent().toString(16);
-    // modules:
-    // a0a36434e33aa15c1ef1335dc2268054323d56411e1e2b13c3986e9cb5b800efed39cd812dd6a1ecc522113084539e30649b83db7b4ef5a510f3081494e3fb5c6c17b09d8e0c49f671f211e09721d1443bfdb2b45654f33138b22b80e716c6494128e8d149ebc028c1658dfdbc86bb049b4d7faab7260c75d82670cc4cc2ffd9
-    // System.out.println("modulus: " + modulus);
-    // System.out.println("exponent: " + exponent);
-    // PublicKey pb = getPublicRSAKey(modulus, exponent);
-    // System.out.println("PublicKey2: " + pb);
-    
+    PrivateKey privateKey = kp.getPrivate();
+    byte[] prk = privateKey.getEncoded();
+    String privateKeyStr = new String(Base64.encode(prk));
+
+    PublicKey publicKey = kp.getPublic();
+    byte[] pbk = publicKey.getEncoded();
+    String publicKeyStr = new String(Base64.encode(pbk));
+
+    System.out.println("PrivateKey: " + privateKey);
+    System.out.println("PublicKey: " + publicKey);
+
+    System.out.println("---------------------------------------");
+    System.out.println("PrivateKey String:" + privateKeyStr);
+    System.out.println("PublicKey String:" + publicKeyStr);
+    System.out.println("---------------------------------------");
+
+    PrivateKey privateKeyD = getPrivateRSAKey(privateKeyStr);
+    System.out.println("decodePrivateKey:" + privateKeyD);
+
+    PublicKey publicKeyD = getPublicRSAKey(publicKeyStr);
+    System.out.println("decodePublicKey:" + publicKeyD);
+
+    /*     String modulus = ((JCERSAPublicKey)publicKey).getModulus().toString(16);
+     String exponent = ((JCERSAPublicKey)publicKey).getPublicExponent().toString(16);
+//     modules:
+//     a0a36434e33aa15c1ef1335dc2268054323d56411e1e2b13c3986e9cb5b800efed39cd812dd6a1ecc522113084539e30649b83db7b4ef5a510f3081494e3fb5c6c17b09d8e0c49f671f211e09721d1443bfdb2b45654f33138b22b80e716c6494128e8d149ebc028c1658dfdbc86bb049b4d7faab7260c75d82670cc4cc2ffd9
+     System.out.println("modulus: " + modulus);
+     System.out.println("exponent: " + exponent);
+     PublicKey pb = getPublicRSAKey(modulus, exponent);
+     System.out.println("PublicKey: " + pb);*/
+
   }
 
 }
