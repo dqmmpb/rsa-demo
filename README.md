@@ -14,7 +14,15 @@
 + Server使用Client端的cPub将response的message加密，返回给Client
 + Client使用Client端的cPriv将返回的message解密
 
+## 运行
 
+```
+ mvn tomcat7:run
+```
+
+## 访问
+
+http://localhost:8080/rsa/web/v1/index
 
 [1]: http://baike.baidu.com/link?url=xmptW-i-04zzpBeSEhxRdUu33Xp_osV7i0e2MGTNbPzh3LME6S_ERt4ViHGp0D_RInCP4PSfNpNlMeSdsCzmTGbqGOrj3GQX0tdo8v3-16V59rN4Xng8FgSLJdh1L1va "RSA算法——百度百科"
 [2]: https://www.zhihu.com/question/25038691 "RSA算法的加密原理是什么？——知乎"
