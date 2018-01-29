@@ -5,27 +5,329 @@
 	<artifactId>rsa</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>rsa Maven Webapp</name>
+	<name>rsa demo</name>
 	<url>http://maven.apache.org</url>
+
+	<properties>
+		<springframework.version>4.3.7.RELEASE</springframework.version>
+		<aspectj.version>1.8.13</aspectj.version>
+		<json-lib.version>2.4</json-lib.version>
+		<ezmorph.version>1.0.6</ezmorph.version>
+		<fastjson.version>2.8.5</fastjson.version>
+		<alibaba.fastjson.version>1.2.44</alibaba.fastjson.version>
+		<servlet.version>2.5</servlet.version>
+		<spring-data-redis.version>1.8.0.RELEASE</spring-data-redis.version>
+		<jedis.version>2.9.0</jedis.version>
+		<commons-codec.version>1.10</commons-codec.version>
+		<junit.version>4.12</junit.version>
+		<mariadb.version>1.1.7</mariadb.version>
+		<sl4j.version>1.7.5</sl4j.version>
+		<log4j.version>1.2.15</log4j.version>
+		<cglib.version>2.2.2</cglib.version>
+		<jdom.version>1.1.3</jdom.version>
+		<dom4j.version>2.1.0</dom4j.version>
+		<xom.version>1.2.5</xom.version>
+		<bcprov-jdk16.version>1.45</bcprov-jdk16.version>
+		<commons-dbcp2.version>2.2.0</commons-dbcp2.version>
+		<commons-lang3.version>3.6</commons-lang3.version>
+		<commons-fileupload.version>1.2.2</commons-fileupload.version>
+		<commons-io.version>2.6</commons-io.version>
+		<commons-beanutils.version>1.9.3</commons-beanutils.version>
+		<httpclient.version>4.4</httpclient.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+	</properties>
 	<dependencies>
+		<!-- springframework -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${springframework.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- springframework end -->
+
+		<!-- aop -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<!-- aop end -->
+
+        <!-- sl4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${sl4j.version}</version>
+        </dependency>
+        <!-- sl4j end -->
+
+		<!-- log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- log4j end -->
+
+		<!-- json -->
+		<dependency>
+			<groupId>net.sf.ezmorph</groupId>
+			<artifactId>ezmorph</artifactId>
+			<version>${ezmorph.version}</version>
+		</dependency>
+		<!-- json end -->
+
+		<!-- fastjson -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${fastjson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${fastjson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${fastjson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${alibaba.fastjson.version}</version>
+		</dependency>
+		<!-- fastjson end -->
+
+		<!-- servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${servlet.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- servlet end -->
+
+		<!-- ca -->
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk16</artifactId>
-			<version>1.46</version>
+			<version>${bcprov-jdk16.version}</version>
 		</dependency>
+		<!-- ca end -->
+
+		<!-- junit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>${junit.version}</version>
+			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-		</dependency>
+		<!-- junit end -->
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<package.env>local</package.env>
+				<tomcat.server.host>localhost</tomcat.server.host>
+				<tomcat.server.port>8080</tomcat.server.port>
+				<tomcat.server.name>local</tomcat.server.name>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>*.properties</include>
+							<include>*.xml</include>
+						</includes>
+					</resource>
+					<resource>
+						<directory>src/main/resources/local</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<package.env>dev</package.env>
+				<tomcat.server.host>localhost</tomcat.server.host>
+				<tomcat.server.port>8080</tomcat.server.port>
+				<tomcat.server.name>dev</tomcat.server.name>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>*.properties</include>
+							<include>*.xml</include>
+						</includes>
+					</resource>
+					<resource>
+						<directory>src/main/resources/dev</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<package.env>test</package.env>
+				<tomcat.server.host>localhost</tomcat.server.host>
+				<tomcat.server.port>8080</tomcat.server.port>
+				<tomcat.server.name>test</tomcat.server.name>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>*.properties</include>
+							<include>*.xml</include>
+						</includes>
+					</resource>
+					<resource>
+						<directory>src/main/resources/test</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<package.env>prod</package.env>
+				<tomcat.server.host>localhost</tomcat.server.host>
+				<tomcat.server.port>8080</tomcat.server.port>
+				<tomcat.server.name>prod</tomcat.server.name>
+			</properties>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>*.properties</include>
+							<include>*.xml</include>
+						</includes>
+					</resource>
+					<resource>
+						<directory>src/main/resources/prod</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles>
+	<!-- 构建 -->
 	<build>
-		<finalName>rsa</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.16</version>
+				<configuration>
+					<systemProperties>
+						<property>
+							<name>catalina.base</name>
+							<value>${project.build.directory}</value>
+						</property>
+					</systemProperties>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+				<configuration>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+					<warName>${project.artifactId}.${package.env}</warName>
+					<webResources>
+						<resources>
+							<resource>
+								<directory>src/main/resources</directory>
+							</resource>
+						</resources>
+					</webResources>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<configuration>
+					<url>http://${tomcat.server.host}:${tomcat.server.port}/manager/text</url>
+					<server>${tomcat.server.name}</server>
+					<uriEncoding>UTF-8</uriEncoding>
+					<path>/${project.artifactId}</path>
+					<port>${tomcat.server.port}</port>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 </project>
