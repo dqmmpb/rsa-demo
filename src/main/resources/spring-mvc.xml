@@ -17,6 +17,7 @@
                             expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
   </context:component-scan>
 
+
   <bean id="jacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
     <property name="supportedMediaTypes">
       <list>
@@ -25,9 +26,21 @@
     </property>
   </bean>
 
+  <mvc:annotation-driven>
+    <mvc:message-converters register-defaults="true">
+      <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="objectMapper">
+          <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+            <property name="serializationInclusion">
+              <value type="com.fasterxml.jackson.annotation.JsonInclude.Include">NON_NULL</value>
+            </property>
+          </bean>
+        </property>
+      </bean>
+    </mvc:message-converters>
+  </mvc:annotation-driven>
 
   <mvc:resources mapping="/js/**" location="/js/" />
-  <mvc:resources mapping="/lib/**" location="/lib/" />
 
   <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
     <property name="prefix" value="/WEB-INF/views/"/>
