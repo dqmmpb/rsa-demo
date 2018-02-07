@@ -22,6 +22,43 @@ import java.util.Map;
 @RequestMapping("/rest/api")
 public class RestController extends BaseController {
 
+    @RequestMapping(value = "/v1/init", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResult init(HttpServletRequest request) {
+
+        BaseResult result = new BaseResult();
+
+        try {
+            PublicKey publicKey = RSAUtil.getPublicRSAKey(RSAUtil.PUBLIC_Key);
+            PrivateKey privateKey = RSAUtil.getPrivateRSAKey(RSAUtil.PRIVATE_KEY);
+
+            byte[] prk = privateKey.getEncoded();
+            String privateKeyStr = new String(Base64.encode(prk));
+
+            byte[] pbk = publicKey.getEncoded();
+            String publicKeyStr = new String(Base64.encode(pbk));
+
+            Map<String, String> rsaKeyPair = new HashMap<String, String>();
+
+            rsaKeyPair.put("sPub", publicKeyStr);
+            rsaKeyPair.put("sPriv", privateKeyStr);
+
+            HttpSession session = request.getSession();
+
+            session.setAttribute("sPub", publicKeyStr);
+            session.setAttribute("sPriv", privateKeyStr);
+
+            result.setResult(rsaKeyPair);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setSuccess(false);
+        }
+
+        return result;
+    }
+
+
+
     @RequestMapping(value = "/v1/generate", method = RequestMethod.POST)
     @ResponseBody
     public BaseResult generate(HttpServletRequest request) {
@@ -56,8 +93,6 @@ public class RestController extends BaseController {
 
         return result;
     }
-
-
 
     @RequestMapping(value = "/v1/send", method = RequestMethod.POST)
     @ResponseBody
