@@ -17,4 +17,13 @@ public class WebController extends BaseController {
         return "index";
     }
 
+    @RequestMapping(value = "/v1/jsrsasign", method = RequestMethod.GET)
+    public String jsrsasign(HttpServletRequest request) {
+        return "jsrsasign";
+    }
+
+    @RequestMapping(value = "/v1/jsencrypt", method = RequestMethod.GET)
+    public String jsencrypt(HttpServletRequest request) {
+        return "jsencrypt";
+    }
 }
