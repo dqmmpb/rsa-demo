@@ -11,6 +11,14 @@ RSAKey.prototype.getPEM = function(key, pemHeader) {
   return hextopem(b64nltohex(key), pemHeader);
 };
 
+RSAKey.prototype.encryptB64 = function (text) {
+  return hextob64(this.encrypt(text));
+};
+
+RSAKey.prototype.decryptB64 = function (text) {
+  return this.decrypt(b64tohex(text));
+};
+
 RSAKey.prototype.getPrivateBaseKey = function () {
   var keyPem = KEYUTIL.getPEM(this, "PKCS8PRV");
   return pemtohex(keyPem);
@@ -73,7 +81,7 @@ $(function() {
     } else {
       rsa.readPKCS8PrvKeyFromB64(key);
     }
-    var encrypted = hextob64(rsa.encrypt(text));
+    var encrypted = rsa.encryptB64(text);
 
     return encrypted;
   }
@@ -93,7 +101,7 @@ $(function() {
     } else {
       rsa.readPKCS8PrvKeyFromB64(key);
     }
-    var decrypted = rsa.decrypt(b64tohex(text));
+    var decrypted = rsa.decryptB64(text);
 
     return decrypted;
   }
