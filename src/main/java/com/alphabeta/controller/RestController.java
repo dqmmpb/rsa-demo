@@ -1,6 +1,5 @@
 package com.alphabeta.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.alphabeta.domain.BaseResult;
 import com.alphabeta.util.RSAUtil;
 import org.bouncycastle.util.encoders.Base64;
@@ -32,11 +31,8 @@ public class RestController extends BaseController {
             PublicKey publicKey = RSAUtil.getPublicRSAKey(RSAUtil.PUBLIC_Key);
             PrivateKey privateKey = RSAUtil.getPrivateRSAKey(RSAUtil.PRIVATE_KEY);
 
-            byte[] prk = privateKey.getEncoded();
-            String privateKeyStr = new String(Base64.encode(prk));
-
-            byte[] pbk = publicKey.getEncoded();
-            String publicKeyStr = new String(Base64.encode(pbk));
+            String privateKeyStr = RSAUtil.toString(privateKey);
+            String publicKeyStr = RSAUtil.toString(publicKey);
 
             Map<String, String> rsaKeyPair = new HashMap<String, String>();
 
@@ -58,7 +54,6 @@ public class RestController extends BaseController {
     }
 
 
-
     @RequestMapping(value = "/v1/generate", method = RequestMethod.POST)
     @ResponseBody
     public BaseResult generate(HttpServletRequest request) {
@@ -68,12 +63,10 @@ public class RestController extends BaseController {
         try {
             KeyPair kp = RSAUtil.generateKeyPair();
             PrivateKey privateKey = kp.getPrivate();
-            byte[] prk = privateKey.getEncoded();
-            String privateKeyStr = new String(Base64.encode(prk));
-
             PublicKey publicKey = kp.getPublic();
-            byte[] pbk = publicKey.getEncoded();
-            String publicKeyStr = new String(Base64.encode(pbk));
+
+            String privateKeyStr = RSAUtil.toString(privateKey);
+            String publicKeyStr = RSAUtil.toString(publicKey);
 
             Map<String, String> rsaKeyPair = new HashMap<String, String>();
 
@@ -103,7 +96,7 @@ public class RestController extends BaseController {
         HttpSession session = request.getSession();
 
         try {
-            String sPriv = (String)session.getAttribute("sPriv");
+            String sPriv = (String) session.getAttribute("sPriv");
             PrivateKey privateKey = RSAUtil.getPrivateRSAKey(sPriv);
             String decryptedText = RSAUtil.decryptToString(message, privateKey);
 

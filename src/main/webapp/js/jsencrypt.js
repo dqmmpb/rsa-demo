@@ -2,7 +2,7 @@
 
 var basePath = '/rsa';
 
-$(function() {
+$(function () {
 
   var CLIENT_PUBLICKEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCPrkLZe1AxVnhckFoF/c5BbuW86/LQE5hSynrGq2Dho9SaGqEu8QpZfhqk+w6OQaM8cdiAbakty7sjRzJ47JlGzoxHlurYKfxvo1T/3N2gXFa4H0ZpZXlG+uetyTMl06ndFl9Ji9GvxVzWW2B/RRB5tsEEkdoET3AG4V5bh1VgrQIDAQAB";
   var CLIENT_PRIVATEKEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAI+uQtl7UDFWeFyQWgX9zkFu5bzr8tATmFLKesarYOGj1JoaoS7xCll+GqT7Do5Bozxx2IBtqS3LuyNHMnjsmUbOjEeW6tgp/G+jVP/c3aBcVrgfRmlleUb6563JMyXTqd0WX0mL0a/FXNZbYH9FEHm2wQSR2gRPcAbhXluHVWCtAgMBAAECgYBBfyukHk1xIDzf3UHcZ1WFiHsbwuc+KSCP5RNQy0DvuxIoaak+T8zq/MxCltuMx6kU3cTWzqaHZM7bBxKgAyLfamrTcFyh4rUrkMzcBEENFkRng7//Px7vzwcUocygA4KGh6eGkef6/33yhgF4wUofUWgW2qyDNQm24OitLti7oQJBAPjOijg1gl6ytRrwdqPq+S4t7Y3ZHFjiis+7yhgZMZoS2JFeVtaQbbPfXzQ4eMExGEH2/lbOuMrsrEkxRUUNGfUCQQCT1apsFYDZwIcGSQ6DStEj4X+ukw5h/q2VnfI8B2u4EqbBbpzZ5DL7lo4yDDH85xifmLl0P3SrhSDeOSa/9ODZAkEA155OZHXi3GRs1MLNXjK07VM6CnK7wT/aYjpw4j97H/XzHs+t29Zga8BJhjzmUS5Vwlzlf584wAspJ2j+id/XvQJARDWLYj8xqkaYhh/jIFS+1k1O+h9DvZciRCwR/fx2iQGiCxGcMTSHCWnXxeO2lLeTtt9ige5dSF4uYhoAdQTpUQJBANoP3JGufyUusSp7UiRX/kUg1K2rfkrzg5MLNpPuKljs3mI/xGopddBogFNomZCbssGpUM+VFvNwnhZQByx58O4=";
@@ -19,7 +19,7 @@ $(function() {
   function encrypt(text, key, isPub) {
     // Encrypt with key...
     var jsEncrypt = new JSEncrypt();
-    if(isPub) {
+    if (isPub) {
       jsEncrypt.setPublicKey(key);
     } else {
       jsEncrypt.setPrivateKey(key);
@@ -39,7 +39,7 @@ $(function() {
   function decrypt(text, key, isPub) {
     // Decrypt with key...
     var jsDecrypt = new JSEncrypt();
-    if(isPub) {
+    if (isPub) {
       jsDecrypt.setPublicKey(key);
     } else {
       jsDecrypt.setPrivateKey(key);
@@ -90,8 +90,8 @@ $(function() {
     $.ajax({
       url: basePath + "/rest/api/v1/init",
       type: "post",
-      success: function(data) {
-        if(data.success) {
+      success: function (data) {
+        if (data.success) {
           var result = data.result;
           var privateKey = result.sPriv;
           var publicKey = result.sPub;
@@ -111,8 +111,8 @@ $(function() {
     $.ajax({
       url: basePath + "/rest/api/v1/generate",
       type: "post",
-      success: function(data) {
-        if(data.success) {
+      success: function (data) {
+        if (data.success) {
           var result = data.result;
           var privateKey = result.sPriv;
           var publicKey = result.sPub;
@@ -130,7 +130,7 @@ $(function() {
 
   function sendMessage(message) {
     var cPub = $('#clientRSA .publicKey').text();
-    if(cPub) {
+    if (cPub) {
       var params = {
         message: message,
         cPub: cPub,
@@ -139,8 +139,8 @@ $(function() {
         url: basePath + "/rest/api/v1/send",
         type: "post",
         data: params,
-        success: function(data) {
-          if(data.success) {
+        success: function (data) {
+          if (data.success) {
             var result = data.result;
             var message = result.message;
             var CLIENT_PRIV_KEY = $('#clientRSA .privateKey').text();
@@ -156,7 +156,7 @@ $(function() {
 
   function encryptMessage() {
     var sPub = $('#serverRSA .publicKey').text();
-    if(sPub) {
+    if (sPub) {
       var plainText = $('#textareaRequestText').val();
       var encryptText = encrypt(plainText, sPub, true);
       $('#messageEncrypt .plainText').text(encryptText);
@@ -167,7 +167,7 @@ $(function() {
 
   function decryptMessage() {
     var sPriv = $('#serverRSA .privateKey').text();
-    if(sPriv) {
+    if (sPriv) {
       var message = $('#messageEncrypt .plainText').text();
       var decryptText = decrypt(message, sPriv);
       $('#messageDecrypt .plainText').text(decryptText);
@@ -183,27 +183,27 @@ $(function() {
     $('#messageDecrypt .plainText').text('');
   }
 
-  $('#clientRSA .generate').click(function() {
+  $('#clientRSA .generate').click(function () {
     generateClientRSA();
     clear();
   });
 
-  $('#serverRSA .generate').click(function() {
+  $('#serverRSA .generate').click(function () {
     generateServerRSA();
     clear();
   });
 
-  $('#encodeMessage').click(function() {
+  $('#encodeMessage').click(function () {
     encryptMessage();
   });
 
-  $('#decodeMessage').click(function() {
+  $('#decodeMessage').click(function () {
     decryptMessage();
   });
 
-  $('#send').click(function() {
+  $('#send').click(function () {
     var message = $('#messageEncrypt .plainText').text();
-    if(message) {
+    if (message) {
       sendMessage(message);
     } else {
       alert('请先点击按钮，使用sPub生成密文');

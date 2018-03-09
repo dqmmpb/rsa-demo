@@ -9,7 +9,7 @@
 	http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <mvc:annotation-driven />
+  <mvc:annotation-driven/>
 
   <context:component-scan base-package="com.alphabeta.**.controller" use-default-filters="false">
     <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
@@ -18,7 +18,8 @@
   </context:component-scan>
 
 
-  <bean id="jacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+  <bean id="jacksonHttpMessageConverter"
+        class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
     <property name="supportedMediaTypes">
       <list>
         <value>application/json;charset=UTF-8</value>
@@ -40,7 +41,7 @@
     </mvc:message-converters>
   </mvc:annotation-driven>
 
-  <mvc:resources mapping="/js/**" location="/js/" />
+  <mvc:resources mapping="/js/**" location="/js/"/>
 
   <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
     <property name="prefix" value="/WEB-INF/views/"/>

@@ -38,6 +38,7 @@
     .navbar {
       margin-bottom: 20px;
     }
+
     .card {
       margin-bottom: 20px;
     }

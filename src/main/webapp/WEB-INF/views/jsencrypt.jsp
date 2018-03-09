@@ -38,6 +38,7 @@
     .navbar {
       margin-bottom: 20px;
     }
+
     .card {
       margin-bottom: 20px;
     }
@@ -66,7 +67,9 @@
     <div class="col-sm">
       <div id="clientRSA" class="card">
         <div class="card-body">
-          <h5 class="card-title">Client <button class="btn btn-primary generate" type="button">生成Client密钥</button></h5>
+          <h5 class="card-title">Client
+            <button class="btn btn-primary generate" type="button">生成Client密钥</button>
+          </h5>
           <div class="card-text">
             <label>Client公钥（简称cPub）</label>
             <div class="value publicKey"></div>
@@ -79,7 +82,9 @@
     <div class="col-sm">
       <div id="serverRSA" class="card">
         <div class="card-body">
-          <h5 class="card-title">Server <button class="btn btn-primary generate" type="button">生成Server密钥</button></h5>
+          <h5 class="card-title">Server
+            <button class="btn btn-primary generate" type="button">生成Server密钥</button>
+          </h5>
           <div class="card-text">
             <label>Server公钥（简称sPub）</label>
             <div class="value publicKey"></div>
