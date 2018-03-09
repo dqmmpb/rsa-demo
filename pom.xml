@@ -304,13 +304,6 @@
 						<addMavenDescriptor>false</addMavenDescriptor>
 					</archive>
 					<warName>${project.artifactId}.${package.env}</warName>
-					<webResources>
-						<resources>
-							<resource>
-								<directory>src/main/resources</directory>
-							</resource>
-						</resources>
-					</webResources>
 				</configuration>
 			</plugin>
 			<plugin>
