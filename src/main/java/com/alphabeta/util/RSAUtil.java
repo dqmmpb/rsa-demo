@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -64,10 +63,12 @@ public class RSAUtil {
 
     // 算法
     private static final String ALGORITHM = "RSA";
+    // 随机数算法
+    private static final String RANDOM_ALGORITHM = "SHA1PRNG";
     // 编码默认格式
     private static final String UTF8 = "UTF-8";
 
-    // 种子，改变后，生成的密钥对会发生变化
+    // 种子，改变后，生成的密钥对会发生变化；
     private static final String SEEDKEY = "seedKey";
 
     // 密钥默认长度
@@ -75,26 +76,35 @@ public class RSAUtil {
 
     /**
      * 生成公私钥对
+     *
      * @return
      * @throws Exception
      */
     public static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
-        return generateKeyPair(SEEDKEY);
+        return generateKeyPair(KEYSIZE);
     }
 
     /**
      * 生成公私钥对
+     *
      * @param keySize 密钥长度
      * @return
      * @throws Exception
      */
     public static KeyPair generateKeyPair(int keySize) throws NoSuchAlgorithmException {
-        return generateKeyPair(SEEDKEY, keySize);
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance(ALGORITHM, pro);
+
+        SecureRandom secureRandom = SecureRandom.getInstance(RANDOM_ALGORITHM);
+
+        kpg.initialize(keySize, secureRandom);
+        KeyPair kp = kpg.generateKeyPair();
+        return kp;
     }
 
     /**
      * 生成公私钥对
-     * @param seedKey 种子
+     *
+     * @param seedKey 种子，当种子相同时，生成的密钥相同
      * @return
      * @throws Exception
      */
@@ -104,20 +114,30 @@ public class RSAUtil {
 
     /**
      * 生成公私钥对
-     * @param seedKey 种子
+     *
+     * @param seedKey 种子，当种子相同时，生成的密钥相同
      * @param keySize 密钥长度
      * @return
      * @throws Exception
      */
     public static KeyPair generateKeyPair(String seedKey, int keySize) throws NoSuchAlgorithmException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance(ALGORITHM, pro);
-        kpg.initialize(keySize, new SecureRandom(seedKey.getBytes()));
+        // windows和linux下SecureRandom的行为不一致
+        // 如果使用new SecureRandom(seedKey.getBytes())，在windows会生成相同密钥，在linux会生成不同密钥
+        // 因此使用如下方法，确保在相同seedKey下，windows和linux都能生成相同密钥
+        byte seedKeyBytes[] = seedKey.getBytes();
+        SecureRandom secureRandom = SecureRandom.getInstance(RANDOM_ALGORITHM);
+        secureRandom.setSeed(seedKeyBytes);
+//        SecureRandom secureRandom = new SecureRandom(seedKey.getBytes());
+
+        kpg.initialize(keySize, secureRandom);
         KeyPair kp = kpg.generateKeyPair();
         return kp;
     }
 
     /**
      * bytes转公钥
+     *
      * @param bytes
      * @return
      * @throws InvalidKeySpecException
@@ -135,6 +155,7 @@ public class RSAUtil {
 
     /**
      * bytes转私钥
+     *
      * @param bytes
      * @return
      * @throws InvalidKeySpecException
@@ -152,6 +173,7 @@ public class RSAUtil {
 
     /**
      * String转公钥
+     *
      * @param key
      * @return
      * @throws InvalidKeySpecException
@@ -162,6 +184,7 @@ public class RSAUtil {
 
     /**
      * String转私钥
+     *
      * @param key
      * @return
      * @throws InvalidKeySpecException
@@ -172,6 +195,7 @@ public class RSAUtil {
 
     /**
      * 公私钥转String格式
+     *
      * @param key
      * @return
      * @throws Exception
@@ -183,6 +207,7 @@ public class RSAUtil {
 
     /**
      * bytes转String格式
+     *
      * @param bytes
      * @return
      * @throws Exception
@@ -193,6 +218,7 @@ public class RSAUtil {
 
     /**
      * String转bytes
+     *
      * @param text
      * @return
      * @throws Exception
@@ -203,6 +229,7 @@ public class RSAUtil {
 
     /**
      * String转bytes
+     *
      * @param text
      * @param charSet 编码
      * @return
@@ -214,8 +241,9 @@ public class RSAUtil {
 
     /**
      * 使用密钥加密bytes，返回bytes
+     *
      * @param text
-     * @param key 密钥（公钥/私钥）
+     * @param key  密钥（公钥/私钥）
      * @return
      * @throws Exception
      */
@@ -227,8 +255,9 @@ public class RSAUtil {
 
     /**
      * 使用密钥加密String，返回bytes
+     *
      * @param text
-     * @param key 密钥（公钥/私钥）
+     * @param key  密钥（公钥/私钥）
      * @return
      * @throws Exception
      */
@@ -239,8 +268,9 @@ public class RSAUtil {
 
     /**
      * 使用密钥加密String，返回String
+     *
      * @param text
-     * @param key 密钥（公钥/私钥）
+     * @param key  密钥（公钥/私钥）
      * @return
      * @throws Exception
      */
@@ -251,8 +281,9 @@ public class RSAUtil {
 
     /**
      * 使用密钥解密bytes，返回bytes
+     *
      * @param text
-     * @param key 密钥（公钥/私钥）
+     * @param key  密钥（公钥/私钥）
      * @return
      * @throws Exception
      */
@@ -264,8 +295,9 @@ public class RSAUtil {
 
     /**
      * 使用密钥解密bytes，返回String
+     *
      * @param text
-     * @param key 密钥（公钥/私钥）
+     * @param key  密钥（公钥/私钥）
      * @return
      * @throws Exception
      */
@@ -275,8 +307,9 @@ public class RSAUtil {
 
     /**
      * 使用密钥解密String，返回String
+     *
      * @param text
-     * @param key 私钥
+     * @param key  私钥
      * @return
      * @throws Exception
      */
@@ -287,6 +320,7 @@ public class RSAUtil {
 
     /**
      * 将Pem从String格式转为bytes
+     *
      * @param keyPem
      * @return
      * @throws InvalidKeySpecException
@@ -305,6 +339,7 @@ public class RSAUtil {
 
     /**
      * 从Pem中解析公钥
+     *
      * @param keyPem
      * @return
      * @throws InvalidKeySpecException
@@ -315,6 +350,7 @@ public class RSAUtil {
 
     /**
      * 从Pem中解析私钥
+     *
      * @param keyPem
      * @return
      * @throws InvalidKeySpecException
@@ -325,6 +361,7 @@ public class RSAUtil {
 
     /**
      * 获取Pem格式的RSAKey
+     *
      * @param type
      * @param key
      * @return
@@ -346,6 +383,7 @@ public class RSAUtil {
 
     /**
      * 获取Pem格式的公钥
+     *
      * @param key
      * @return
      * @throws InvalidKeySpecException
@@ -356,6 +394,7 @@ public class RSAUtil {
 
     /**
      * 获取Pem格式的私钥
+     *
      * @param key
      * @return
      * @throws InvalidKeySpecException
