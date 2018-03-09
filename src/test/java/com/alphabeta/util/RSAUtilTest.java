@@ -1,13 +1,14 @@
 package com.alphabeta.util;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.UnsupportedEncodingException;
+import java.security.*;
 
 public class RSAUtilTest {
 
@@ -25,51 +26,75 @@ public class RSAUtilTest {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
 
+
+    private void testEncryptAndDecrypt(String text, Key encryptKey, Key decryptKey) throws BadPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+        String plainText = text;
+        System.out.println("公钥：" + publicKey);
+        System.out.println("私钥：" + privateKey);
+        System.out.println("明文：" + plainText);
+        String encryptedText = RSAUtil.encryptToString(plainText, encryptKey);
+        System.out.println("Java加密后：" + encryptedText);
+        String decryptedText = RSAUtil.decryptToString(encryptedText, decryptKey);
+        System.out.println("Java解密后：" + decryptedText);
+    }
+    /**
+     * 公钥加密，私钥解密
+     */
+    @Test
+    public void testEncryptPubAndDecryptPriv() throws BadPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+        String plainText = "Java中文";
+        testEncryptAndDecrypt(plainText, publicKey, privateKey);
     }
 
     /**
-     * java加密， java解密
+     * 私钥加密，公钥解密。认证
      */
     @Test
-    public void testEncryptJavaAndDecryptJava() {
-        try {
-            String plainText = "Java中文";
-            System.out.println("明文：" + plainText);
-            String encryptedText = RSAUtil.encryptToString(plainText, publicKey);
-            System.out.println("Java加密后：" + encryptedText);
-            String decryptedText = RSAUtil.decryptToString(encryptedText, privateKey);
-            System.out.println("Java解密后：" + decryptedText);
-            Assert.assertEquals(plainText, decryptedText);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+    public void testEncryptPrivAndDecryptPub() throws BadPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+        String plainText = "Java中文";
+        testEncryptAndDecrypt(plainText, privateKey, publicKey);
     }
 
+    /**
+     * 生成公私钥
+     */
     @Test
-    public void testGenerate() {
-        try {
-            KeyPair kp = RSAUtil.generateKeyPair();
-            PrivateKey privateKey = kp.getPrivate();
-            PublicKey publicKey = kp.getPublic();
+    public void testGenerate() throws NoSuchAlgorithmException {
+        KeyPair kp = RSAUtil.generateKeyPair();
+        PrivateKey privateKey = kp.getPrivate();
+        PublicKey publicKey = kp.getPublic();
 
-            String privateKeyStr = RSAUtil.toString(privateKey);
-            String publicKeyStr = RSAUtil.toString(publicKey);
+        String privateKeyStr = RSAUtil.toString(privateKey);
+        String publicKeyStr = RSAUtil.toString(publicKey);
 
-            System.out.println(privateKeyStr);
-            System.out.println(publicKeyStr);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        System.out.println(privateKeyStr);
+        System.out.println(publicKeyStr);
     }
 
 
     /**
-     * 生成Pem格式的Key
+     * 生成公私钥 keySize 512
      */
+    @Test
+    public void testGenerateKeySize512() throws NoSuchAlgorithmException {
+        KeyPair kp = RSAUtil.generateKeyPair(512);
+        PrivateKey privateKey = kp.getPrivate();
+        PublicKey publicKey = kp.getPublic();
+
+        String privateKeyStr = RSAUtil.toString(privateKey);
+        String publicKeyStr = RSAUtil.toString(publicKey);
+
+        System.out.println(privateKeyStr);
+        System.out.println(publicKeyStr);
+    }
+
+
+    /**
+     * 生成Pem格式的公私钥
+     */
+    @Ignore
     @Test
     public void testGenerateKeyPem() {
         try {
@@ -95,8 +120,9 @@ public class RSAUtilTest {
     }
 
     /**
-     * 从Pem中读取Key
+     * 从Pem中读取公私钥
      */
+    @Ignore
     @Test
     public void testGetKeyFromPem() {
         try {

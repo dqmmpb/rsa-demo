@@ -6,10 +6,14 @@ import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.bouncycastle.util.io.pem.PemWriter;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -54,30 +58,88 @@ public class RSAUtil {
         "fxxsxy/F57xuCQ==\n" +
         "-----END PRIVATE KEY-----";
 
-    public static final Provider pro = new BouncyCastleProvider();
+    private static final Provider pro = new BouncyCastleProvider();
 
-    private static final String charSet = "UTF-8";
+    // 统一以16进制解析modulus和exponent字符串
+    private static final int BIGINTEGER_RADIX = 16;
 
-    // 种子,改变后,生成的密钥对会发生变化
-    private static final String seedKey = "seedKey";
+    // 算法
+    private static final String ALGORITHM = "RSA";
+    // 编码默认格式
+    private static final String UTF8 = "UTF-8";
 
-    public static KeyPair generateKeyPair() throws Exception {
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", pro);
-        kpg.initialize(1024, new SecureRandom(seedKey.getBytes()));
+    // 种子，改变后，生成的密钥对会发生变化
+    private static final String SEEDKEY = "seedKey";
+
+    // 密钥默认长度
+    private static final int KEYSIZE = 1024;
+
+    /**
+     * 生成公私钥对
+     * @return
+     * @throws Exception
+     */
+    public static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
+        return generateKeyPair(SEEDKEY);
+    }
+
+    /**
+     * 生成公私钥对
+     * @param keySize 密钥长度
+     * @return
+     * @throws Exception
+     */
+    public static KeyPair generateKeyPair(int keySize) throws NoSuchAlgorithmException {
+        return generateKeyPair(SEEDKEY, keySize);
+    }
+
+    /**
+     * 生成公私钥对
+     * @param seedKey 种子
+     * @return
+     * @throws Exception
+     */
+    public static KeyPair generateKeyPair(String seedKey) throws NoSuchAlgorithmException {
+        return generateKeyPair(seedKey, KEYSIZE);
+    }
+
+    /**
+     * 生成公私钥对
+     * @param seedKey 种子
+     * @param keySize 密钥长度
+     * @return
+     * @throws Exception
+     */
+    public static KeyPair generateKeyPair(String seedKey, int keySize) throws NoSuchAlgorithmException {
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance(ALGORITHM, pro);
+        kpg.initialize(keySize, new SecureRandom(seedKey.getBytes()));
         KeyPair kp = kpg.generateKeyPair();
         return kp;
     }
 
-    public static PublicKey getPublicRSAKey(String modulus, String exponent) throws Exception {
-        RSAPublicKeySpec spec = new RSAPublicKeySpec(new BigInteger(modulus, 16), new BigInteger(exponent, 16));
-        KeyFactory kf = KeyFactory.getInstance("RSA", pro);
+    /**
+     * 生成公钥
+     * @param modulus
+     * @param exponent
+     * @return
+     * @throws Exception
+     */
+    private static PublicKey getPublicRSAKey(String modulus, String exponent) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        RSAPublicKeySpec spec = new RSAPublicKeySpec(new BigInteger(modulus, BIGINTEGER_RADIX), new BigInteger(exponent, BIGINTEGER_RADIX));
+        KeyFactory kf = KeyFactory.getInstance(ALGORITHM, pro);
         return kf.generatePublic(spec);
     }
 
+    /**
+     * bytes转公钥
+     * @param bytes
+     * @return
+     * @throws InvalidKeySpecException
+     */
     private static PublicKey bytesToPublicKey(byte[] bytes) throws InvalidKeySpecException {
         try {
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);
-            KeyFactory kf = KeyFactory.getInstance("RSA", pro);
+            KeyFactory kf = KeyFactory.getInstance(ALGORITHM, pro);
             return kf.generatePublic(keySpec);
         } catch (NoSuchAlgorithmException e) {
             // Can't happen
@@ -85,10 +147,16 @@ public class RSAUtil {
         return null;
     }
 
+    /**
+     * bytes转私钥
+     * @param bytes
+     * @return
+     * @throws InvalidKeySpecException
+     */
     private static PrivateKey bytesToPrivateKey(byte[] bytes) throws InvalidKeySpecException {
         try {
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
-            KeyFactory kf = KeyFactory.getInstance("RSA", pro);
+            KeyFactory kf = KeyFactory.getInstance(ALGORITHM, pro);
             return kf.generatePrivate(keySpec);
         } catch (NoSuchAlgorithmException e) {
             // Can't happen
@@ -96,58 +164,147 @@ public class RSAUtil {
         return null;
     }
 
+    /**
+     * String转公钥
+     * @param key
+     * @return
+     * @throws InvalidKeySpecException
+     */
     public static PublicKey getPublicRSAKey(String key) throws InvalidKeySpecException {
         return bytesToPublicKey(Base64.decode(key));
     }
 
+    /**
+     * String转私钥
+     * @param key
+     * @return
+     * @throws InvalidKeySpecException
+     */
     public static PrivateKey getPrivateRSAKey(String key) throws InvalidKeySpecException {
         return bytesToPrivateKey(Base64.decode(key));
     }
 
-    public static String toString(Key key) throws Exception {
+    /**
+     * 公私钥转String格式
+     * @param key
+     * @return
+     * @throws Exception
+     */
+    public static String toString(Key key) {
         byte[] bytes = key.getEncoded();
         return toString(bytes);
     }
 
-    public static String toString(byte[] bytes) throws Exception {
+    /**
+     * bytes转String格式
+     * @param bytes
+     * @return
+     * @throws Exception
+     */
+    public static String toString(byte[] bytes) {
         return new String(Base64.encode(bytes));
     }
 
-    public static byte[] toBytes(String text) throws Exception {
+    /**
+     * String转bytes
+     * @param text
+     * @return
+     * @throws Exception
+     */
+    public static byte[] toBytes(String text) throws UnsupportedEncodingException {
+        return toBytes(text, UTF8);
+    }
+
+    /**
+     * String转bytes
+     * @param text
+     * @param charSet 编码
+     * @return
+     * @throws Exception
+     */
+    public static byte[] toBytes(String text, String charSet) throws UnsupportedEncodingException {
         return text.getBytes(charSet);
     }
 
-    private static byte[] encrypt(byte[] text, PublicKey publicKey) throws Exception {
+    /**
+     * 使用密钥加密bytes，返回bytes
+     * @param text
+     * @param key 密钥（公钥/私钥）
+     * @return
+     * @throws Exception
+     */
+    private static byte[] encrypt(byte[] text, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance("RSA/None/PKCS1Padding", pro);
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
         return cipher.doFinal(text);
     }
 
-    private static byte[] encryptToBytes(String text, PublicKey publicKey) throws Exception {
-        return RSAUtil.encrypt(RSAUtil.toBytes(text), publicKey);
+    /**
+     * 使用密钥加密String，返回bytes
+     * @param text
+     * @param key 密钥（公钥/私钥）
+     * @return
+     * @throws Exception
+     */
+    private static byte[] encryptToBytes(String text, Key key) throws UnsupportedEncodingException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
+        return RSAUtil.encrypt(RSAUtil.toBytes(text), key);
     }
 
-    public static String encryptToString(String text, PublicKey publicKey) throws Exception {
-        byte[] en = RSAUtil.encryptToBytes(text, publicKey);
+
+    /**
+     * 使用密钥加密String，返回String
+     * @param text
+     * @param key 密钥（公钥/私钥）
+     * @return
+     * @throws Exception
+     */
+    public static String encryptToString(String text, Key key) throws BadPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+        byte[] en = RSAUtil.encryptToBytes(text, key);
         return new String(Base64.encode(en));
     }
 
-    private static byte[] decrypt(byte[] encrypted, PrivateKey privateKey) throws Exception {
+    /**
+     * 使用密钥解密bytes，返回bytes
+     * @param text
+     * @param key 密钥（公钥/私钥）
+     * @return
+     * @throws Exception
+     */
+    private static byte[] decrypt(byte[] text, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance("RSA/None/PKCS1Padding", pro);
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        return cipher.doFinal(encrypted);
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        return cipher.doFinal(text);
     }
 
-    private static String decryptToString(byte[] encrypted, PrivateKey privateKey) throws Exception {
-        return new String(RSAUtil.decrypt(encrypted, privateKey));
+    /**
+     * 使用密钥解密bytes，返回String
+     * @param text
+     * @param key 密钥（公钥/私钥）
+     * @return
+     * @throws Exception
+     */
+    private static String decryptToString(byte[] text, Key key) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
+        return new String(RSAUtil.decrypt(text, key));
     }
 
-    public static String decryptToString(String encrypted, PrivateKey privateKey) throws Exception {
-        byte[] en = Base64.decode(encrypted);
-        return decryptToString(en, privateKey);
+    /**
+     * 使用密钥解密String，返回String
+     * @param text
+     * @param key 私钥
+     * @return
+     * @throws Exception
+     */
+    public static String decryptToString(String text, Key key) throws InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException {
+        byte[] en = Base64.decode(text);
+        return decryptToString(en, key);
     }
 
-
+    /**
+     * 将Pem从String格式转为bytes
+     * @param keyPem
+     * @return
+     * @throws InvalidKeySpecException
+     */
     private static byte[] getBytesFromPem(String keyPem) throws InvalidKeySpecException {
         try {
             StringReader stringReader = new StringReader(keyPem);
@@ -160,14 +317,33 @@ public class RSAUtil {
         }
     }
 
+    /**
+     * 从Pem中解析公钥
+     * @param keyPem
+     * @return
+     * @throws InvalidKeySpecException
+     */
     public static PublicKey getPublicRSAKeyFromPem(String keyPem) throws InvalidKeySpecException {
         return bytesToPublicKey(getBytesFromPem(keyPem));
     }
 
+    /**
+     * 从Pem中解析私钥
+     * @param keyPem
+     * @return
+     * @throws InvalidKeySpecException
+     */
     public static PrivateKey getPrivateRSAKeyFromPem(String keyPem) throws InvalidKeySpecException {
         return bytesToPrivateKey(getBytesFromPem(keyPem));
     }
 
+    /**
+     * 获取Pem格式的RSAKey
+     * @param type
+     * @param key
+     * @return
+     * @throws InvalidKeySpecException
+     */
     private static String generateKeyPem(String type, Key key) throws InvalidKeySpecException {
         try {
             StringWriter stringWriter = new StringWriter();
@@ -182,10 +358,22 @@ public class RSAUtil {
         }
     }
 
+    /**
+     * 获取Pem格式的公钥
+     * @param key
+     * @return
+     * @throws InvalidKeySpecException
+     */
     public static String generatePublicRSAKeyPem(Key key) throws InvalidKeySpecException {
         return generateKeyPem("PUBLIC KEY", key);
     }
 
+    /**
+     * 获取Pem格式的私钥
+     * @param key
+     * @return
+     * @throws InvalidKeySpecException
+     */
     public static String generatePrivateRSAKeyPem(Key key) throws InvalidKeySpecException {
         return generateKeyPem("PRIVATE KEY", key);
     }
