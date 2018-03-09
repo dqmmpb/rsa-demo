@@ -18,7 +18,7 @@ public class RSAUtilTest {
     private static String privateKeyRem = null;
     static {
         try {
-            publicKey = RSAUtil.getPublicRSAKey(RSAUtil.PUBLIC_Key);
+            publicKey = RSAUtil.getPublicRSAKey(RSAUtil.PUBLIC_KEY);
             privateKey = RSAUtil.getPrivateRSAKey(RSAUtil.PRIVATE_KEY);
             publicKeyRem = RSAUtil.PUBLIC_KEY_PEM;
             privateKeyRem = RSAUtil.PRIVATE_KEY_PEM;

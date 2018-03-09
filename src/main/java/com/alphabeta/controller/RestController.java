@@ -28,7 +28,7 @@ public class RestController extends BaseController {
         BaseResult result = new BaseResult();
 
         try {
-            PublicKey publicKey = RSAUtil.getPublicRSAKey(RSAUtil.PUBLIC_Key);
+            PublicKey publicKey = RSAUtil.getPublicRSAKey(RSAUtil.PUBLIC_KEY);
             PrivateKey privateKey = RSAUtil.getPrivateRSAKey(RSAUtil.PRIVATE_KEY);
 
             String privateKeyStr = RSAUtil.toString(privateKey);
