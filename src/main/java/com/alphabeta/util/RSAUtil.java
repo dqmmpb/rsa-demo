@@ -18,7 +18,6 @@ import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 /**
@@ -115,19 +114,6 @@ public class RSAUtil {
         kpg.initialize(keySize, new SecureRandom(seedKey.getBytes()));
         KeyPair kp = kpg.generateKeyPair();
         return kp;
-    }
-
-    /**
-     * 生成公钥
-     * @param modulus
-     * @param exponent
-     * @return
-     * @throws Exception
-     */
-    private static PublicKey getPublicRSAKey(String modulus, String exponent) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        RSAPublicKeySpec spec = new RSAPublicKeySpec(new BigInteger(modulus, BIGINTEGER_RADIX), new BigInteger(exponent, BIGINTEGER_RADIX));
-        KeyFactory kf = KeyFactory.getInstance(ALGORITHM, pro);
-        return kf.generatePublic(spec);
     }
 
     /**
