@@ -71,7 +71,10 @@ $(function () {
   }
 
   function generateClientRSA() {
-    var keyPair = new JSEncrypt();
+    var keyPair = {
+      prvKeyObj: new JSEncrypt(),
+      pubKeyObj: new JSEncrypt(),
+    };
     setClientRSA(keyPair);
   }
 
