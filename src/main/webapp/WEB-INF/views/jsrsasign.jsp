@@ -59,6 +59,9 @@
       <li class="nav-item">
         <a class="nav-link" href="<%=path%>/web/v1/jsrsasign">jsrsasign</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="<%=path%>/web/v1/node-rsa">node-rsa</a>
+      </li>
     </ul>
   </div>
 </nav>

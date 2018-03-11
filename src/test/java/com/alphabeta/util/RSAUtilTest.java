@@ -10,6 +10,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
 
+@Ignore
 public class RSAUtilTest {
 
     private static PublicKey publicKey = null;

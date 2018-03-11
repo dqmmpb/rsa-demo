@@ -118,4 +118,79 @@ public class RestController extends BaseController {
         return result;
     }
 
+
+    /**
+     * 返回加密后的结果
+     * @param request
+     * @param message
+     * @param key
+     * @param isPub
+     * @return
+     */
+    @RequestMapping(value = "/v1/encrypt", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResult encrypt(HttpServletRequest request, @RequestParam(name = "message") String message, @RequestParam(name = "key") String key, @RequestParam(name = "isPub", defaultValue = "false") boolean isPub) {
+        BaseResult result = new BaseResult();
+
+        try {
+            String encryptedText;
+            if(isPub) {
+                PublicKey publicKey = RSAUtil.getPublicRSAKey(key);
+                encryptedText = RSAUtil.encryptToString(message, publicKey);
+            } else {
+                PrivateKey privateKey = RSAUtil.getPrivateRSAKey(key);
+                encryptedText=RSAUtil.decryptToString(message, privateKey);
+            }
+
+            Map<String, String> messageResult = new HashMap<String, String>();
+
+            messageResult.put("message", encryptedText);
+
+            result.setResult(messageResult);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setSuccess(false);
+        }
+
+        return result;
+    }
+
+
+    /**
+     * 返回解密后的结果
+     * @param request
+     * @param message
+     * @param key
+     * @param isPub
+     * @return
+     */
+    @RequestMapping(value = "/v1/decrypt", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResult decrypt(HttpServletRequest request, @RequestParam(name = "message") String message, @RequestParam(name = "key") String key, @RequestParam(name = "isPub", defaultValue = "false") boolean isPub) {
+        BaseResult result = new BaseResult();
+
+        try {
+            String decryptedText;
+            if(isPub) {
+                PublicKey publicKey = RSAUtil.getPublicRSAKey(key);
+                decryptedText = RSAUtil.decryptToString(message, publicKey);
+            } else {
+                PrivateKey privateKey = RSAUtil.getPrivateRSAKey(key);
+                decryptedText=RSAUtil.decryptToString(message, privateKey);
+            }
+
+            Map<String, String> messageResult = new HashMap<String, String>();
+
+            messageResult.put("message", decryptedText);
+
+            result.setResult(messageResult);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setSuccess(false);
+        }
+
+        return result;
+    }
 }

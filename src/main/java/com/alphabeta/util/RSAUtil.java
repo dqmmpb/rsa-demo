@@ -93,16 +93,13 @@ public class RSAUtil {
      */
     public static KeyPair generateKeyPair(int keySize) throws NoSuchAlgorithmException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance(ALGORITHM, pro);
-
-        SecureRandom secureRandom = SecureRandom.getInstance(RANDOM_ALGORITHM);
-
-        kpg.initialize(keySize, secureRandom);
+        kpg.initialize(keySize);
         KeyPair kp = kpg.generateKeyPair();
         return kp;
     }
 
     /**
-     * 生成公私钥对
+     * 生成公私钥对，使用特定种子生成
      *
      * @param seedKey 种子，当种子相同时，生成的密钥相同
      * @return
@@ -113,7 +110,7 @@ public class RSAUtil {
     }
 
     /**
-     * 生成公私钥对
+     * 生成公私钥对，使用特定种子生成
      *
      * @param seedKey 种子，当种子相同时，生成的密钥相同
      * @param keySize 密钥长度

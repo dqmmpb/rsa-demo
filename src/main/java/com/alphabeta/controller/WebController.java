@@ -24,4 +24,9 @@ public class WebController extends BaseController {
     public String jsencrypt(HttpServletRequest request) {
         return "jsencrypt";
     }
+
+    @RequestMapping(value = "/v1/node-rsa", method = RequestMethod.GET)
+    public String nodersa(HttpServletRequest request) {
+        return "node-rsa";
+    }
 }

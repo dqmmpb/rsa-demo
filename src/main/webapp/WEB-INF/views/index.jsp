@@ -59,13 +59,16 @@
       <li class="nav-item">
         <a class="nav-link" href="<%=path%>/web/v1/jsrsasign">jsrsasign</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="<%=path%>/web/v1/node-rsa">node-rsa</a>
+      </li>
     </ul>
   </div>
 </nav>
 <div class="container-fluid">
   <div class="row">
     <div class="col-sm">
-      分别采用了两个前端的rsa插件，实现rsa密钥的生成。
+      分别采用了3个前端的rsa插件，实现rsa密钥的生成，参考如上链接。
     </div>
   </div>
 </div>
