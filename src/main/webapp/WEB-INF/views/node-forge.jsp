@@ -59,10 +59,10 @@
       <li class="nav-item">
         <a class="nav-link" href="<%=path%>/web/v1/jsrsasign">jsrsasign</a>
       </li>
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="<%=path%>/web/v1/node-rsa">node-rsa</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" href="<%=path%>/web/v1/node-forge">node-forge</a>
       </li>
     </ul>
@@ -160,8 +160,8 @@
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="<%=path%>/js/lib/node-rsa/node-rsa-bundle.js"></script>
-<script src="<%=path%>/js/node-rsa.js"></script>
+<script src="<%=path%>/js/lib/forge.min.js"></script>
+<script src="<%=path%>/js/node-forge.js"></script>
 
 </body>
 </html>

@@ -62,6 +62,9 @@
       <li class="nav-item">
         <a class="nav-link" href="<%=path%>/web/v1/node-rsa">node-rsa</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="<%=path%>/web/v1/node-forge">node-forge</a>
+      </li>
     </ul>
   </div>
 </nav>

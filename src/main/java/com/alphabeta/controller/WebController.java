@@ -29,4 +29,9 @@ public class WebController extends BaseController {
     public String nodersa(HttpServletRequest request) {
         return "node-rsa";
     }
+
+    @RequestMapping(value = "/v1/node-forge", method = RequestMethod.GET)
+    public String nodeforge(HttpServletRequest request) {
+        return "node-forge";
+    }
 }
