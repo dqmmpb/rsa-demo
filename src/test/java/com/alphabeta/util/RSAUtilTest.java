@@ -1,6 +1,5 @@
 package com.alphabeta.util;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -17,6 +16,7 @@ public class RSAUtilTest {
     private static PrivateKey privateKey = null;
     private static String publicKeyRem = null;
     private static String privateKeyRem = null;
+
     static {
         try {
             publicKey = RSAUtil.getPublicRSAKey(RSAUtil.PUBLIC_KEY);
@@ -40,6 +40,7 @@ public class RSAUtilTest {
         String decryptedText = RSAUtil.decryptToString(encryptedText, decryptKey);
         System.out.println("Java解密后：" + decryptedText);
     }
+
     /**
      * 公钥加密，私钥解密
      */
@@ -67,8 +68,8 @@ public class RSAUtilTest {
         PrivateKey privateKey = kp.getPrivate();
         PublicKey publicKey = kp.getPublic();
 
-        String privateKeyStr = RSAUtil.toString(privateKey);
-        String publicKeyStr = RSAUtil.toString(publicKey);
+        String privateKeyStr = RSAUtil.toBase64(privateKey);
+        String publicKeyStr = RSAUtil.toBase64(publicKey);
 
         System.out.println(privateKeyStr);
         System.out.println(publicKeyStr);
@@ -84,8 +85,8 @@ public class RSAUtilTest {
         PrivateKey privateKey = kp.getPrivate();
         PublicKey publicKey = kp.getPublic();
 
-        String privateKeyStr = RSAUtil.toString(privateKey);
-        String publicKeyStr = RSAUtil.toString(publicKey);
+        String privateKeyStr = RSAUtil.toBase64(privateKey);
+        String publicKeyStr = RSAUtil.toBase64(publicKey);
 
         System.out.println(privateKeyStr);
         System.out.println(publicKeyStr);
@@ -105,11 +106,11 @@ public class RSAUtilTest {
             System.out.println(publicKey.getFormat());
             System.out.println(publicKey.getAlgorithm());
 
-            String privateKeyPem = RSAUtil.generatePublicRSAKeyPem(privateKey);
+            String privateKeyPem = RSAUtil.generateKeyPemPKCS8(privateKey);
 
             System.out.println(privateKeyPem);
 
-            String publicKeyPem = RSAUtil.generatePublicRSAKeyPem(publicKey);
+            String publicKeyPem = RSAUtil.generateKeyPemPKCS8(publicKey);
 
             System.out.println(publicKeyPem);
 
@@ -142,4 +143,65 @@ public class RSAUtilTest {
         }
 
     }
+
+    /**
+     * 签名和验签
+     */
+    @Test
+    public void testSignAndVerify() {
+        try {
+
+            String decryptedText = "123";
+            String messageText = "服务端处理成功，客户端发送过来的内容为：" + decryptedText;
+            // 签名
+            String sign = RSAUtil.sign(messageText, privateKey);
+            System.out.println(messageText);
+            System.out.println(sign);
+
+            // 验签
+            boolean isPass = RSAUtil.verify(messageText, sign, publicKey);
+            System.out.println(isPass);
+
+            // 签名
+            String sign2 = RSAUtil.sign(messageText, privateKey, RSAUtil.MD5_WITH_RSA);
+            System.out.println(messageText);
+            System.out.println(sign2);
+
+            // 验签
+            boolean isPass2 = RSAUtil.verify(messageText, sign2, publicKey, RSAUtil.MD5_WITH_RSA);
+            System.out.println(isPass2);
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 签名和验签
+     */
+    @Test
+    public void testPKCS8ToPKCS1() {
+        try {
+            // 公钥转换
+            System.out.println(publicKeyRem);
+            String publicKey_PKCS8 = RSAUtil.generateKeyPemPKCS8(publicKey);
+            System.out.println(publicKey_PKCS8);
+            String publicKey_PKCS1 = RSAUtil.generateKeyPemPKCS1(publicKey);
+            System.out.println(publicKey_PKCS1);
+
+            // 私钥转换
+            System.out.println(privateKeyRem);
+            String privateKey_PKCS8 = RSAUtil.generateKeyPemPKCS8(privateKey);
+            System.out.println(privateKey_PKCS8);
+            String privateKey_PKCS1 = RSAUtil.generateKeyPemPKCS1(privateKey);
+            System.out.println(privateKey_PKCS1);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
 }

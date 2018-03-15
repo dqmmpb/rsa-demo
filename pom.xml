@@ -88,13 +88,13 @@
 		</dependency>
 		<!-- aop end -->
 
-        <!-- sl4j -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${sl4j.version}</version>
-        </dependency>
-        <!-- sl4j end -->
+    <!-- sl4j -->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${sl4j.version}</version>
+    </dependency>
+    <!-- sl4j end -->
 
 		<!-- log4j -->
 		<dependency>
@@ -159,12 +159,15 @@
 		</dependency>
 		<!-- servlet end -->
 
-		<!-- ca -->
-		<!--<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk16</artifactId>
-			<version>${bcprov-jdk16.version}</version>
-		</dependency>-->
+    <!-- commons -->
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>${commons-codec.version}</version>
+    </dependency>
+    <!-- commons end -->
+
+    <!-- ca -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-ext-jdk15on</artifactId>

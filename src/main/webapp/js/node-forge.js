@@ -6,29 +6,60 @@ var pki = forge.pki;
 var util = forge.util;
 var rsa = forge.rsa;
 var pem = forge.pem;
+var md = forge.md;
 
 /**
- * 生成pem格式
+ * 将PKCS#1转换为PKCS#8
+ * @param prvKeyObj
+ * @returns {the|*}
+ */
+pki.privateKeyPKCS1ToPKCS8 = function (prvKeyObj) {
+  // 生成pkcs#8格式的pem
+  const rsaPrivateKey = pki.privateKeyToAsn1(prvKeyObj);
+  const privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
+  const privateKeyPem = pki.privateKeyInfoToPem(privateKeyInfo);
+  return pki.privateKeyFromPem(privateKeyPem);
+};
+
+/**
+ * 提取pem中的body
+ * @param Pem
+ * @returns {the|*}
+ */
+pki.bodyFromPem = function (Pem) {
+  return util.encode64(pem.decode(Pem)[0].body);
+};
+
+/**
+ * 将body转换为pem格式
  * @param pem
  * @param pemHeader
  * @returns {*}
  */
-function rawtopem(raw, pemHeader) {
-  var pemBody = raw;
+pki.bodyToPem = function (body, pemHeader) {
+  var pemBody = body;
   return "-----BEGIN " + pemHeader + "-----\r\n" +
     pemBody +
     "\r\n-----END " + pemHeader + "-----\r\n";
-}
+};
 
-function privateKeyRawtopem(raw) {
-  return rawtopem(raw, "PRIVATE KEY");
-}
+/**
+ * 将私钥的body转换为pkcs#8格式的pem
+ * @param raw
+ * @returns {*}
+ */
+pki.privateKeyBodyToPem = function (body) {
+  return pki.bodyToPem(body, "PRIVATE KEY");
+};
 
-function publicKeyRawtopem(raw) {
-  return rawtopem(raw, "PUBLIC KEY");
-}
-
-
+/**
+ * 将公钥的body转换为pem格式
+ * @param raw
+ * @returns {*}
+ */
+pki.publicKeyBodyToPem = function (body) {
+  return pki.bodyToPem(body, "PUBLIC KEY");
+};
 
 
 $(function () {
@@ -47,10 +78,11 @@ $(function () {
    */
   function encrypt(text, key, isPub) {
     // Encrypt with key...
-    var encryptKey = isPub ? pki.publicKeyFromPem(publicKeyRawtopem(key)) : privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(privateKeyRawtopem(key)));
+    var encryptKeyPem = isPub ? pki.publicKeyBodyToPem(key) : pki.privateKeyBodyToPem(key);
+    var encryptKey = isPub ? pki.publicKeyFromPem(encryptKeyPem) : pki.privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(encryptKeyPem));
     var buffer = util.createBuffer(util.encodeUtf8(text));
     var binaryString = buffer.getBytes();
-    if(isPub) {
+    if (isPub) {
       return util.encode64(encryptKey.encrypt(binaryString));
     } else {
       return util.encode64(encryptKey.encrypt(binaryString));
@@ -66,9 +98,10 @@ $(function () {
    */
   function decrypt(text, key, isPub) {
     // Decrypt with key...
-    var decryptKey = isPub ? pki.publicKeyFromPem(publicKeyRawtopem(key)) : privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(privateKeyRawtopem(key)));
+    var decryptKeyPem = isPub ? pki.publicKeyBodyToPem(key) : pki.privateKeyBodyToPem(key);
+    var decryptKey = isPub ? pki.publicKeyFromPem(decryptKeyPem) : pki.privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(decryptKeyPem));
     var binaryString = util.decode64(text);
-    if(isPub) {
+    if (isPub) {
       return util.decodeUtf8(decryptKey.decrypt(binaryString));
     } else {
       return util.decodeUtf8(decryptKey.decrypt(binaryString));
@@ -76,27 +109,32 @@ $(function () {
   }
 
   /**
-   * 将PKCS#1转换为PKCS#8
-   * @param prvKeyObj
-   * @returns {the|*}
+   * 签名
+   * @param md md摘要
+   * @param key 加密的key
+   * @returns {*}
    */
-  function privateKeyPKCS1ToPKCS8(prvKeyObj) {
-    // 生成pkcs#8格式的pem
-    const rsaPrivateKey = pki.privateKeyToAsn1(prvKeyObj);
-    const privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
-    const privateKeyPem = pki.privateKeyInfoToPem(privateKeyInfo);
-    return pki.privateKeyFromPem(privateKeyPem);
+  function sign(key, md, scheme) {
+    // Sign with key...
+    var signKeyPem = pki.privateKeyBodyToPem(key);
+    var signKey = pki.privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(signKeyPem));
+    var buffer = util.createBuffer(util.encodeUtf8(md));
+    var binaryString = buffer.getBytes();
+    return util.encode64(signKey.sign(binaryString, scheme));
   }
 
   /**
-   * 提取pem中的body
-   * @param Pem
-   * @returns {the|*}
+   * 验签
+   * @param md md摘要
+   * @param key 加密的key
+   * @returns {*}
    */
-  function bodyFromPem(Pem) {
-    return util.encode64(pem.decode(Pem)[0].body);
+  function verify(key, digest, signature, scheme) {
+    // Verify with key...
+    var verifyKeyPem = pki.publicKeyBodyToPem(key);
+    var verifyKey = pki.publicKeyFromPem(verifyKeyPem);
+    return verifyKey.verify(digest, signature, scheme);
   }
-
 
   function setClientRSA(keyPair) {
     var prvKeyObj = keyPair.prvKeyObj;
@@ -104,11 +142,11 @@ $(function () {
     // 生成pem
     const privateKeyPem = pki.privateKeyToPem(prvKeyObj);
     // 从pem中解析body
-    const privateKey = bodyFromPem(privateKeyPem);
+    const privateKey = pki.bodyFromPem(privateKeyPem);
     // 生成pem
     const publicKeyPem = pki.publicKeyToPem(pubKeyObj);
     // 从pem中解析body
-    const publicKey = bodyFromPem(publicKeyPem);
+    const publicKey = pki.bodyFromPem(publicKeyPem);
     console.log(prvKeyObj);
     console.log(pubKeyObj);
     $('#clientRSA .privateKey').text(privateKey);
@@ -117,8 +155,8 @@ $(function () {
 
   function initClientRSA() {
     var keyPair = {
-      prvKeyObj: privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(privateKeyRawtopem(CLIENT_PRIVATEKEY))),
-      pubKeyObj: pki.publicKeyFromPem(publicKeyRawtopem(CLIENT_PUBLICKEY)),
+      prvKeyObj: pki.privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(pki.privateKeyBodyToPem(CLIENT_PRIVATEKEY))),
+      pubKeyObj: pki.publicKeyFromPem(pki.publicKeyBodyToPem(CLIENT_PUBLICKEY)),
     };
 
     setClientRSA(keyPair);
@@ -127,7 +165,7 @@ $(function () {
   function generateClientRSA() {
     var keypair = rsa.generateKeyPair({bits: 1024, e: 0x10001});
     var keyPair = {
-      prvKeyObj: privateKeyPKCS1ToPKCS8(keypair.privateKey),
+      prvKeyObj: pki.privateKeyPKCS1ToPKCS8(keypair.privateKey),
       pubKeyObj: keypair.privateKey,
     };
 
@@ -140,11 +178,11 @@ $(function () {
     // 生成pem
     const privateKeyPem = pki.privateKeyToPem(prvKeyObj);
     // 从pem中解析body
-    const privateKey = bodyFromPem(privateKeyPem);
+    const privateKey = pki.bodyFromPem(privateKeyPem);
     // 生成pem
     const publicKeyPem = pki.publicKeyToPem(pubKeyObj);
     // 从pem中解析body
-    const publicKey = bodyFromPem(publicKeyPem);
+    const publicKey = pki.bodyFromPem(publicKeyPem);
     console.log(prvKeyObj);
     console.log(pubKeyObj);
     $('#serverRSA .privateKey').text(privateKey);
@@ -161,8 +199,8 @@ $(function () {
           var privateKey = result.sPriv;
           var publicKey = result.sPub;
           var keyPair = {
-            prvKeyObj: privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(privateKeyRawtopem(privateKey))),
-            pubKeyObj: pki.publicKeyFromPem(publicKeyRawtopem(publicKey)),
+            prvKeyObj: pki.privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(pki.privateKeyBodyToPem(privateKey))),
+            pubKeyObj: pki.publicKeyFromPem(pki.publicKeyBodyToPem(publicKey)),
           };
           setServerRSA(keyPair);
         }
@@ -180,8 +218,8 @@ $(function () {
           var privateKey = result.sPriv;
           var publicKey = result.sPub;
           var keyPair = {
-            prvKeyObj: privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(privateKeyRawtopem(privateKey))),
-            pubKeyObj: pki.publicKeyFromPem(publicKeyRawtopem(publicKey)),
+            prvKeyObj: pki.privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(pki.privateKeyBodyToPem(privateKey))),
+            pubKeyObj: pki.publicKeyFromPem(pki.publicKeyBodyToPem(publicKey)),
           };
           setServerRSA(keyPair);
         }
@@ -204,9 +242,27 @@ $(function () {
           if (data.success) {
             var result = data.result;
             var message = result.message;
+            var sign = result.sign;
+
+            // 验签
+            var mdMessage = md.sha1.create();
+            mdMessage.update(util.encodeUtf8(message));
+            // 摘要
+            var digest = mdMessage.digest().getBytes();
+            // 公钥
+            var SERVER_PUB_KEY = $('#serverRSA .publicKey').text();
+            var isPass = verify(SERVER_PUB_KEY, digest, util.decode64(sign));
+            $('#signResponseText').text(isPass);
+
+            // var SERVER_PRIV_KEY = $('#serverRSA .privateKey').text();
+            // var prvKeyObj = pki.privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(pki.privateKeyBodyToPem(SERVER_PRIV_KEY)))
+            // var signature = prvKeyObj.sign(md);
+            // console.log(util.encode64(signature));
+
             var CLIENT_PRIV_KEY = $('#clientRSA .privateKey').text();
-            var decryptText = decrypt(message, CLIENT_PRIV_KEY);
+            var decryptText = decrypt(message, CLIENT_PRIV_KEY, false);
             $('#textareaResponseText').val(decryptText);
+
           }
         },
       });
@@ -230,7 +286,7 @@ $(function () {
     var sPriv = $('#serverRSA .privateKey').text();
     if (sPriv) {
       var message = $('#messageEncrypt .plainText').text();
-      var decryptText = decrypt(message, sPriv);
+      var decryptText = decrypt(message, sPriv, false);
       $('#messageDecrypt .plainText').text(decryptText);
     } else {
       alert('请先生成服务端的RSA Key');

@@ -71,7 +71,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-sm">
-      分别采用了3个前端的rsa插件，实现rsa密钥的生成，参考如上链接。
+      分别采用了4个前端的rsa插件，实现rsa密钥的生成，参考如上链接。
     </div>
   </div>
 </div>

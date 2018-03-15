@@ -70,7 +70,7 @@ $(function () {
   function encrypt(text, key, isPub) {
     // Encrypt with key...
     // 必须使用{encryptionScheme: 'pkcs1'}才能保证Server端能解密成功，node-rsa默认的encryptionScheme为'pkcs1_oaep'
-    var encryptKey = isPub ? new NodeRSA(key, 'pkcs8-public-pem', {encryptionScheme: 'pkcs1'}) : new NodeRSA(key, 'pkcs8-pem',  {encryptionScheme: 'pkcs1'});
+    var encryptKey = isPub ? new NodeRSA(key, 'pkcs8-public-pem', {encryptionScheme: 'pkcs1'}) : new NodeRSA(key, 'pkcs8-pem', {encryptionScheme: 'pkcs1'});
     var encrypted;
     if (isPub) {
       encrypted = encryptKey.encrypt(text, BASE64);

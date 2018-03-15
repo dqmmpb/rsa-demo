@@ -1,5 +1,9 @@
 package com.alphabeta.util;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -60,19 +64,29 @@ public class RSAUtil {
 
     // 统一以16进制解析modulus和exponent字符串
     private static final int BIGINTEGER_RADIX = 16;
-
     // 算法
     private static final String ALGORITHM = "RSA";
+    // 签名算法
+    public static final String SHA1_WITH_RSA = "SHA1withRSA";
+    public static final String MD5_WITH_RSA = "MD5withRSA";
+    // Padding
+    private static final String NONE_PADDING = "RSA/None/PKCS1Padding";
     // 随机数算法
     private static final String RANDOM_ALGORITHM = "SHA1PRNG";
     // 编码默认格式
     private static final String UTF8 = "UTF-8";
-
     // 种子，改变后，生成的密钥对会发生变化；
     private static final String SEEDKEY = "seedKey";
-
     // 密钥默认长度
     private static final int KEYSIZE = 1024;
+
+    // 公钥PEM头部
+    private static final String PUBLIC_KEY_PEM_HEADER_PKCS1 = "RSA PUBLIC KEY";
+    private static final String PUBLIC_KEY_PEM_HEADER_PKCS8 = "PUBLIC KEY";
+    // 私钥PEM头部
+    private static final String PRIVATE_KEY_PEM_HEADER_PKCS1 = "RSA PRIVATE KEY";
+    private static final String PRIVATE_KEY_PEM_HEADER_PKCS8 = "PRIVATE KEY";
+
 
     /**
      * 生成公私钥对
@@ -197,20 +211,9 @@ public class RSAUtil {
      * @return
      * @throws Exception
      */
-    public static String toString(Key key) {
+    public static String toBase64(Key key) {
         byte[] bytes = key.getEncoded();
-        return toString(bytes);
-    }
-
-    /**
-     * bytes转String格式
-     *
-     * @param bytes
-     * @return
-     * @throws Exception
-     */
-    public static String toString(byte[] bytes) {
-        return new String(Base64.encode(bytes));
+        return Base64.toBase64String(bytes);
     }
 
     /**
@@ -245,7 +248,7 @@ public class RSAUtil {
      * @throws Exception
      */
     private static byte[] encrypt(byte[] text, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance("RSA/None/PKCS1Padding", pro);
+        Cipher cipher = Cipher.getInstance(NONE_PADDING, pro);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         return cipher.doFinal(text);
     }
@@ -273,7 +276,7 @@ public class RSAUtil {
      */
     public static String encryptToString(String text, Key key) throws BadPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         byte[] en = RSAUtil.encryptToBytes(text, key);
-        return new String(Base64.encode(en));
+        return Base64.toBase64String(en);
     }
 
     /**
@@ -285,7 +288,7 @@ public class RSAUtil {
      * @throws Exception
      */
     private static byte[] decrypt(byte[] text, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance("RSA/None/PKCS1Padding", pro);
+        Cipher cipher = Cipher.getInstance(NONE_PADDING, pro);
         cipher.init(Cipher.DECRYPT_MODE, key);
         return cipher.doFinal(text);
     }
@@ -360,15 +363,15 @@ public class RSAUtil {
      * 获取Pem格式的RSAKey
      *
      * @param type
-     * @param key
+     * @param keyBytes
      * @return
      * @throws InvalidKeySpecException
      */
-    private static String generateKeyPem(String type, Key key) throws InvalidKeySpecException {
+    private static String generateKeyPem(String type, byte[] keyBytes) throws InvalidKeySpecException {
         try {
             StringWriter stringWriter = new StringWriter();
             PemWriter pemWriter = new PemWriter(stringWriter);
-            pemWriter.writeObject(new PemObject(type, key.getEncoded()));
+            pemWriter.writeObject(new PemObject(type, keyBytes));
             pemWriter.close();
             String keyPem = stringWriter.toString();
             stringWriter.close();
@@ -379,25 +382,145 @@ public class RSAUtil {
     }
 
     /**
-     * 获取Pem格式的公钥
+     * 获取Pem格式的RSAKey
      *
+     * @param type
      * @param key
      * @return
      * @throws InvalidKeySpecException
      */
-    public static String generatePublicRSAKeyPem(Key key) throws InvalidKeySpecException {
-        return generateKeyPem("PUBLIC KEY", key);
+    private static String generateKeyPem(String type, Key key) throws InvalidKeySpecException {
+        return generateKeyPem(type, key.getEncoded());
+    }
+
+    /**
+     * 获取Pem格式的公钥
+     *
+     * @param publicKey
+     * @return
+     * @throws InvalidKeySpecException
+     */
+    public static String generateKeyPemPKCS8(PublicKey publicKey) throws InvalidKeySpecException {
+        return generateKeyPem(PUBLIC_KEY_PEM_HEADER_PKCS8, publicKey);
     }
 
     /**
      * 获取Pem格式的私钥
      *
-     * @param key
+     * @param privateKey
      * @return
      * @throws InvalidKeySpecException
      */
-    public static String generatePrivateRSAKeyPem(Key key) throws InvalidKeySpecException {
-        return generateKeyPem("PRIVATE KEY", key);
+    public static String generateKeyPemPKCS8(PrivateKey privateKey) throws InvalidKeySpecException {
+        return generateKeyPem(PRIVATE_KEY_PEM_HEADER_PKCS8, privateKey);
     }
 
+    /**
+     * PKCS#8转换为PKCS#1
+     *
+     * @param privateKey
+     * @throws IOException
+     */
+    public static String generateKeyPemPKCS1(PrivateKey privateKey) throws IOException, InvalidKeySpecException {
+        byte[] privBytes = privateKey.getEncoded();
+
+        PrivateKeyInfo pkInfo = PrivateKeyInfo.getInstance(privBytes);
+        ASN1Encodable encodable = pkInfo.parsePrivateKey();
+        ASN1Primitive primitive = encodable.toASN1Primitive();
+        byte[] privateKeyPKCS1 = primitive.getEncoded();
+        return generateKeyPem(PRIVATE_KEY_PEM_HEADER_PKCS1, privateKeyPKCS1);
+    }
+
+    /**
+     * X509转换为PKCS#1
+     *
+     * @param publicKey
+     * @throws IOException
+     */
+    public static String generateKeyPemPKCS1(PublicKey publicKey) throws IOException, InvalidKeySpecException {
+        byte[] pubBytes = publicKey.getEncoded();
+
+        SubjectPublicKeyInfo spkInfo = SubjectPublicKeyInfo.getInstance(pubBytes);
+        ASN1Primitive primitive = spkInfo.parsePublicKey();
+        byte[] publicKeyPKCS1 = primitive.getEncoded();
+        return generateKeyPem(PUBLIC_KEY_PEM_HEADER_PKCS1, publicKeyPKCS1);
+    }
+
+    /**
+     * 签名，使用SHA1摘要
+     *
+     * @param data
+     * @param privateKey
+     * @return
+     * @throws SignatureException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws UnsupportedEncodingException
+     */
+    public static String sign(String data, PrivateKey privateKey) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
+        return sign(data, privateKey, SHA1_WITH_RSA);
+    }
+
+    /**
+     * 验签，使用SHA1摘要
+     *
+     * @param data
+     * @param sign
+     * @param publicKey
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws SignatureException
+     * @throws UnsupportedEncodingException
+     */
+    public static boolean verify(String data, String sign, PublicKey publicKey) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, UnsupportedEncodingException {
+        return verify(data, sign, publicKey, SHA1_WITH_RSA);
+    }
+
+    /**
+     * 签名
+     *
+     * @param data
+     * @param privateKey
+     * @param algorithm  指定摘要算法
+     * @return
+     * @throws SignatureException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws UnsupportedEncodingException
+     */
+    public static String sign(String data, PrivateKey privateKey, String algorithm) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
+        // 设置签名算法
+        Signature signature = Signature.getInstance(algorithm);
+        // 设置签名加密方式
+        signature.initSign(privateKey);//设置私钥
+        // 签名和加密一样 要以字节形式 utf-8字符集得到字节
+        signature.update(toBytes(data));
+        // 得到base64编码的签名后的字段
+        return Base64.toBase64String(signature.sign());
+    }
+
+    /**
+     * 验签
+     *
+     * @param data
+     * @param sign
+     * @param publicKey
+     * @param algorithm 指定摘要算法
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws SignatureException
+     * @throws UnsupportedEncodingException
+     */
+    public static boolean verify(String data, String sign, PublicKey publicKey, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, UnsupportedEncodingException {
+        // 指定签名类型
+        Signature signature = Signature.getInstance(algorithm);
+        // 放入公钥
+        signature.initVerify(publicKey);
+        // 放入数据
+        signature.update(toBytes(data));
+        // 验签结果
+        return signature.verify(Base64.decode(sign));
+    }
 }

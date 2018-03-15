@@ -147,6 +147,8 @@
                 <textarea class="form-control" readonly id="textareaResponseText" rows="3"></textarea>
               </div>
             </form>
+            <label>验签结果（通过：true，未通过：false）</label>
+            <div id="signResponseText" class="value sign"></div>
           </div>
         </div>
       </div>
@@ -160,7 +162,7 @@
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="<%=path%>/js/lib/forge.min.js"></script>
+<script src="<%=path%>/js/lib/node-forge/forge.min.js"></script>
 <script src="<%=path%>/js/node-forge.js"></script>
 
 </body>

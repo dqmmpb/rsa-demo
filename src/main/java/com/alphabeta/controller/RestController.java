@@ -2,7 +2,6 @@ package com.alphabeta.controller;
 
 import com.alphabeta.domain.BaseResult;
 import com.alphabeta.util.RSAUtil;
-import org.bouncycastle.util.encoders.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,8 +30,8 @@ public class RestController extends BaseController {
             PublicKey publicKey = RSAUtil.getPublicRSAKey(RSAUtil.PUBLIC_KEY);
             PrivateKey privateKey = RSAUtil.getPrivateRSAKey(RSAUtil.PRIVATE_KEY);
 
-            String privateKeyStr = RSAUtil.toString(privateKey);
-            String publicKeyStr = RSAUtil.toString(publicKey);
+            String privateKeyStr = RSAUtil.toBase64(privateKey);
+            String publicKeyStr = RSAUtil.toBase64(publicKey);
 
             Map<String, String> rsaKeyPair = new HashMap<String, String>();
 
@@ -65,8 +64,8 @@ public class RestController extends BaseController {
             PrivateKey privateKey = kp.getPrivate();
             PublicKey publicKey = kp.getPublic();
 
-            String privateKeyStr = RSAUtil.toString(privateKey);
-            String publicKeyStr = RSAUtil.toString(publicKey);
+            String privateKeyStr = RSAUtil.toBase64(privateKey);
+            String publicKeyStr = RSAUtil.toBase64(publicKey);
 
             Map<String, String> rsaKeyPair = new HashMap<String, String>();
 
@@ -101,12 +100,17 @@ public class RestController extends BaseController {
             String decryptedText = RSAUtil.decryptToString(message, privateKey);
 
             String messageText = "服务端处理成功，客户端发送过来的内容为：" + decryptedText;
-            PublicKey publicKey = RSAUtil.getPublicRSAKey(cPub);
-            String messageResponse = RSAUtil.encryptToString(messageText, publicKey);
+            PublicKey clientPublicKey = RSAUtil.getPublicRSAKey(cPub);
+            String messageResponse = RSAUtil.encryptToString(messageText, clientPublicKey);
 
             Map<String, String> messageResult = new HashMap<String, String>();
 
             messageResult.put("message", messageResponse);
+
+            // 签名处理
+            String sign = RSAUtil.sign(messageResponse, privateKey);
+
+            messageResult.put("sign", sign);
 
             result.setResult(messageResult);
 
@@ -121,6 +125,7 @@ public class RestController extends BaseController {
 
     /**
      * 返回加密后的结果
+     *
      * @param request
      * @param message
      * @param key
@@ -134,12 +139,12 @@ public class RestController extends BaseController {
 
         try {
             String encryptedText;
-            if(isPub) {
+            if (isPub) {
                 PublicKey publicKey = RSAUtil.getPublicRSAKey(key);
                 encryptedText = RSAUtil.encryptToString(message, publicKey);
             } else {
                 PrivateKey privateKey = RSAUtil.getPrivateRSAKey(key);
-                encryptedText=RSAUtil.decryptToString(message, privateKey);
+                encryptedText = RSAUtil.decryptToString(message, privateKey);
             }
 
             Map<String, String> messageResult = new HashMap<String, String>();
@@ -159,6 +164,7 @@ public class RestController extends BaseController {
 
     /**
      * 返回解密后的结果
+     *
      * @param request
      * @param message
      * @param key
@@ -172,12 +178,12 @@ public class RestController extends BaseController {
 
         try {
             String decryptedText;
-            if(isPub) {
+            if (isPub) {
                 PublicKey publicKey = RSAUtil.getPublicRSAKey(key);
                 decryptedText = RSAUtil.decryptToString(message, publicKey);
             } else {
                 PrivateKey privateKey = RSAUtil.getPrivateRSAKey(key);
-                decryptedText=RSAUtil.decryptToString(message, privateKey);
+                decryptedText = RSAUtil.decryptToString(message, privateKey);
             }
 
             Map<String, String> messageResult = new HashMap<String, String>();
