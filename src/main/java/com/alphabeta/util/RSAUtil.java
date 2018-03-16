@@ -50,7 +50,7 @@ public class RSAUtil {
     private static final String RANDOM_ALGORITHM = "SHA1PRNG";
     // 编码默认格式
     private static final String UTF8 = "UTF-8";
-    // 种子，改变后，生成的密钥对会发生变化；
+    // 种子，改变后，生成的密钥对会发生变化
     private static final String SEEDKEY = "seedKey";
     // 密钥默认长度
     private static final int KEYSIZE = 1024;
