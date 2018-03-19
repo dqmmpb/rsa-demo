@@ -72,10 +72,17 @@
   <div class="row">
     <div class="col-sm">
       分别采用了4个前端的rsa插件，实现rsa密钥的生成，参考如上链接。
-    </div>
 
-    <div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm">
       <img src="<%=path%>/images/rsa-table.png"/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm">
+      推荐使用 node-forge
     </div>
   </div>
 </div>
