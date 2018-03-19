@@ -16,15 +16,13 @@ $(function () {
    */
   function encrypt(text, key, isPub) {
     // Encrypt with key...
-    var jsEncrypt = new JSEncrypt();
+    var encryptKey = new JSEncrypt();
     if (isPub) {
-      jsEncrypt.setPublicKey(key);
+      encryptKey.setPublicKey(key);
     } else {
-      jsEncrypt.setPrivateKey(key);
+      encryptKey.setPrivateKey(key);
     }
-    var encrypted = jsEncrypt.encrypt(text);
-
-    return encrypted;
+    return encryptKey.encrypt(text);
   }
 
   /**
@@ -36,15 +34,13 @@ $(function () {
    */
   function decrypt(text, key, isPub) {
     // Decrypt with key...
-    var jsDecrypt = new JSEncrypt();
+    var decryptKey = new JSEncrypt();
     if (isPub) {
-      jsDecrypt.setPublicKey(key);
+      decryptKey.setPublicKey(key);
     } else {
-      jsDecrypt.setPrivateKey(key);
+      decryptKey.setPrivateKey(key);
     }
-    var decrypted = jsDecrypt.decrypt(text);
-
-    return decrypted;
+    return decryptKey.decrypt(text);
   }
 
   function setClientRSA(keyPair) {
@@ -144,8 +140,10 @@ $(function () {
           if (data.success) {
             var result = data.result;
             var message = result.message;
+            var sign = result.sign;
+
             var CLIENT_PRIV_KEY = $('#clientRSA .privateKey').text();
-            var decryptText = decrypt(message, CLIENT_PRIV_KEY);
+            var decryptText = decrypt(message, CLIENT_PRIV_KEY, false);
             $('#textareaResponseText').val(decryptText);
           }
         },
@@ -170,7 +168,7 @@ $(function () {
     var sPriv = $('#serverRSA .privateKey').text();
     if (sPriv) {
       var message = $('#messageEncrypt .plainText').text();
-      var decryptText = decrypt(message, sPriv);
+      var decryptText = decrypt(message, sPriv, false);
       $('#messageDecrypt .plainText').text(decryptText);
     } else {
       alert('请先生成服务端的RSA Key');

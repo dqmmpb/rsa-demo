@@ -100,6 +100,33 @@ $(function () {
     return decrypted;
   }
 
+  /**
+   * 签名
+   * @param key 私钥
+   * @param message 内容
+   * @returns {*}
+   */
+  function sign(key, message, scheme) {
+    // Sign with key...
+    var signKey = new NodeRSA(key, 'pkcs8-pem', {encryptionScheme: 'pkcs1', signingScheme: 'sha1'});
+    // 签名
+    return signKey.sign(message, BASE64, UTF8);
+  }
+
+  /**
+   * 验签
+   * @param key 公钥
+   * @param message 内容
+   * @param sign 签名
+   * @returns {*}
+   */
+  function verify(key, message, signature, scheme) {
+    // Verify with key...
+    var verifyKey = new NodeRSA(key, 'pkcs8-public-pem', {encryptionScheme: 'pkcs1', signingScheme: 'sha1'});
+    // 验签
+    return verifyKey.verify(message, signature, UTF8, BASE64);
+  }
+
   function setClientRSA(keyPair) {
     var prvKeyObj = keyPair.prvKeyObj;
     var pubKeyObj = keyPair.pubKeyObj;
@@ -177,12 +204,13 @@ $(function () {
     });
   }
 
-  function sendMessage(message) {
+  function sendMessage(message, cSign) {
     var cPub = $('#clientRSA .publicKey').text();
     if (cPub) {
       var params = {
         message: message,
         cPub: cPub,
+        cSign: cSign,
       };
       $.ajax({
         url: basePath + "/rest/api/v1/send",
@@ -192,8 +220,15 @@ $(function () {
           if (data.success) {
             var result = data.result;
             var message = result.message;
+            var sign = result.sign;
+
+            // 公钥
+            var SERVER_PUB_KEY = $('#serverRSA .publicKey').text();
+            var isPass = verify(SERVER_PUB_KEY, message, sign);
+            $('#signResponseText').text(isPass);
+
             var CLIENT_PRIV_KEY = $('#clientRSA .privateKey').text();
-            var decryptText = decrypt(message, CLIENT_PRIV_KEY);
+            var decryptText = decrypt(message, CLIENT_PRIV_KEY, false);
             $('#textareaResponseText').val(decryptText);
           }
         },
@@ -218,8 +253,19 @@ $(function () {
     var sPriv = $('#serverRSA .privateKey').text();
     if (sPriv) {
       var message = $('#messageEncrypt .plainText').text();
-      var decryptText = decrypt(message, sPriv);
+      var decryptText = decrypt(message, sPriv, false);
       $('#messageDecrypt .plainText').text(decryptText);
+    } else {
+      alert('请先生成服务端的RSA Key');
+    }
+  }
+
+  function signMessage() {
+    var cPriv = $('#clientRSA .privateKey').text();
+    if (cPriv) {
+      var encryptText = $('#messageEncrypt .plainText').text();
+      var signText = sign(cPriv, encryptText);
+      $('#messageSign .plainText').text(signText);
     } else {
       alert('请先生成服务端的RSA Key');
     }
@@ -244,6 +290,7 @@ $(function () {
 
   $('#encodeMessage').click(function () {
     encryptMessage();
+    signMessage();
   });
 
   $('#decodeMessage').click(function () {
@@ -252,8 +299,9 @@ $(function () {
 
   $('#send').click(function () {
     var message = $('#messageEncrypt .plainText').text();
-    if (message) {
-      sendMessage(message);
+    var sign = $('#messageSign .plainText').text();
+    if (message && sign) {
+      sendMessage(message, sign);
     } else {
       alert('请先点击按钮，使用sPub生成密文');
     }

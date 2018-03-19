@@ -135,6 +135,14 @@
           </div>
         </div>
       </div>
+      <div id="messageSign" class="card">
+        <div class="card-body">
+          <h5 class="card-title">使用cPrive生成签名</h5>
+          <div class="card-text">
+            <div class="value plainText"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="col-sm">
       <div class="card">
@@ -147,6 +155,8 @@
                 <textarea class="form-control" readonly id="textareaResponseText" rows="3"></textarea>
               </div>
             </form>
+            <label>验签结果（通过：true，未通过：false）</label>
+            <div id="signResponseText" class="value sign"></div>
           </div>
         </div>
       </div>

@@ -135,6 +135,14 @@
           </div>
         </div>
       </div>
+      <div id="messageSign" class="card">
+        <div class="card-body">
+          <h5 class="card-title">使用cPrive生成签名</h5>
+          <div class="card-text">
+            <div class="value plainText"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="col-sm">
       <div class="card">

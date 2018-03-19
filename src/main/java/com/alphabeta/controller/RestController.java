@@ -1,5 +1,6 @@
 package com.alphabeta.controller;
 
+import com.alphabeta.common.ErrorCode;
 import com.alphabeta.domain.BaseResult;
 import com.alphabeta.util.RSAUtil;
 import org.springframework.stereotype.Controller;
@@ -114,19 +115,31 @@ public class RestController extends BaseController {
 
     @RequestMapping(value = "/v1/send", method = RequestMethod.POST)
     @ResponseBody
-    public BaseResult receiveMessage(HttpServletRequest request, @RequestParam(name = "message") String message, @RequestParam(name = "cPub") String cPub) {
+    public BaseResult receiveMessage(HttpServletRequest request, @RequestParam(name = "message") String message, @RequestParam(name = "cPub") String cPub, @RequestParam(name = "cSign") String cSign) {
 
         BaseResult result = new BaseResult();
 
         HttpSession session = request.getSession();
 
         try {
+
+            PublicKey clientPublicKey = RSAUtil.getPublicRSAKey(cPub);
+
+            // 验签
+            if(cSign != null) {
+                boolean isPass = RSAUtil.verify(message, cSign, clientPublicKey);
+                if(!isPass) {
+                    result.setSuccess(false);
+                    result.setErrorCode(ErrorCode.ERROR_SIGNATURE_NOT_PASS.getCodeString());
+                    return result;
+                }
+            }
+
             String sPriv = (String) session.getAttribute("sPriv");
             PrivateKey privateKey = RSAUtil.getPrivateRSAKey(sPriv);
             String decryptedText = RSAUtil.decryptToString(message, privateKey);
 
             String messageText = "服务端处理成功，客户端发送过来的内容为：" + decryptedText;
-            PublicKey clientPublicKey = RSAUtil.getPublicRSAKey(cPub);
             String messageResponse = RSAUtil.encryptToString(messageText, clientPublicKey);
 
             Map<String, String> messageResult = new HashMap<String, String>();
@@ -137,7 +150,6 @@ public class RestController extends BaseController {
             String sign = RSAUtil.sign(messageResponse, privateKey);
 
             messageResult.put("sign", sign);
-
             result.setResult(messageResult);
 
         } catch (Exception e) {

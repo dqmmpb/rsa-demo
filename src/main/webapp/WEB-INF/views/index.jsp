@@ -73,6 +73,10 @@
     <div class="col-sm">
       分别采用了4个前端的rsa插件，实现rsa密钥的生成，参考如上链接。
     </div>
+
+    <div>
+      <img src="<%=path%>/images/rsa-table.png"/>
+    </div>
   </div>
 </div>
 

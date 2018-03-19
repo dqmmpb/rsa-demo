@@ -108,30 +108,40 @@ $(function () {
 
   /**
    * 签名
-   * @param md md摘要
-   * @param key 加密的key
+   * @param key 私钥
+   * @param message 内容
    * @returns {*}
    */
-  function sign(key, md, scheme) {
+  function sign(key, message, scheme) {
     // Sign with key...
     var signKeyPem = pki.privateKeyBodyToPem(key);
     var signKey = pki.privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(signKeyPem));
-    var buffer = util.createBuffer(util.encodeUtf8(md));
-    var binaryString = buffer.getBytes();
-    return util.encode64(signKey.sign(binaryString, scheme));
+    // 处理消息
+    var mdMessage = md.sha1.create();
+    mdMessage.update(util.encodeUtf8(message));
+    console.log(mdMessage.digest().toHex());
+    // 签名
+    return util.encode64(signKey.sign(mdMessage, scheme));
   }
 
   /**
    * 验签
-   * @param md md摘要
-   * @param key 加密的key
+   * @param key 公钥
+   * @param message 内容
+   * @param sign 签名
    * @returns {*}
    */
-  function verify(key, digest, signature, scheme) {
+  function verify(key, message, sign, scheme) {
     // Verify with key...
     var verifyKeyPem = pki.publicKeyBodyToPem(key);
     var verifyKey = pki.publicKeyFromPem(verifyKeyPem);
-    return verifyKey.verify(digest, signature, scheme);
+    // 处理消息
+    var mdMessage = md.sha1.create();
+    mdMessage.update(util.encodeUtf8(message));
+    // 摘要
+    var digest = mdMessage.digest().getBytes();
+    // 验签
+    return verifyKey.verify(digest, util.decode64(sign), scheme);
   }
 
   function setClientRSA(keyPair) {
@@ -156,7 +166,6 @@ $(function () {
       prvKeyObj: pki.privateKeyPKCS1ToPKCS8(pki.privateKeyFromPem(pki.privateKeyBodyToPem(CLIENT_PRIVATEKEY))),
       pubKeyObj: pki.publicKeyFromPem(pki.publicKeyBodyToPem(CLIENT_PUBLICKEY)),
     };
-
     setClientRSA(keyPair);
   }
 
@@ -166,7 +175,6 @@ $(function () {
       prvKeyObj: pki.privateKeyPKCS1ToPKCS8(keypair.privateKey),
       pubKeyObj: keypair.privateKey,
     };
-
     setClientRSA(keyPair);
   }
 
@@ -225,12 +233,13 @@ $(function () {
     });
   }
 
-  function sendMessage(message) {
+  function sendMessage(message, cSign) {
     var cPub = $('#clientRSA .publicKey').text();
     if (cPub) {
       var params = {
         message: message,
         cPub: cPub,
+        cSign: cSign,
       };
       $.ajax({
         url: basePath + "/rest/api/v1/send",
@@ -242,20 +251,14 @@ $(function () {
             var message = result.message;
             var sign = result.sign;
 
-            // 验签
-            var mdMessage = md.sha1.create();
-            mdMessage.update(util.encodeUtf8(message));
-            // 摘要
-            var digest = mdMessage.digest().getBytes();
             // 公钥
             var SERVER_PUB_KEY = $('#serverRSA .publicKey').text();
-            var isPass = verify(SERVER_PUB_KEY, digest, util.decode64(sign));
+            var isPass = verify(SERVER_PUB_KEY, message, sign);
             $('#signResponseText').text(isPass);
 
             var CLIENT_PRIV_KEY = $('#clientRSA .privateKey').text();
             var decryptText = decrypt(message, CLIENT_PRIV_KEY, false);
             $('#textareaResponseText').val(decryptText);
-
           }
         },
       });
@@ -286,6 +289,17 @@ $(function () {
     }
   }
 
+  function signMessage() {
+    var cPriv = $('#clientRSA .privateKey').text();
+    if (cPriv) {
+      var encryptText = $('#messageEncrypt .plainText').text();
+      var signText = sign(cPriv, encryptText);
+      $('#messageSign .plainText').text(signText);
+    } else {
+      alert('请先生成服务端的RSA Key');
+    }
+  }
+
   function clear() {
     $('#textareaRequestText').val('');
     $('#textareaResponseText').val('');
@@ -305,6 +319,7 @@ $(function () {
 
   $('#encodeMessage').click(function () {
     encryptMessage();
+    signMessage();
   });
 
   $('#decodeMessage').click(function () {
@@ -313,8 +328,9 @@ $(function () {
 
   $('#send').click(function () {
     var message = $('#messageEncrypt .plainText').text();
-    if (message) {
-      sendMessage(message);
+    var sign = $('#messageSign .plainText').text();
+    if (message && sign) {
+      sendMessage(message, sign);
     } else {
       alert('请先点击按钮，使用sPub生成密文');
     }
