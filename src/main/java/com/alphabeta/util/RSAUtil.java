@@ -237,7 +237,7 @@ public class RSAUtil {
      * @throws Exception
      */
     private static byte[] encryptToBytes(String text, Key key) throws UnsupportedEncodingException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-        return RSAUtil.encrypt(RSAUtil.toBytes(text), key);
+        return encrypt(toBytes(text), key);
     }
 
 
@@ -250,7 +250,7 @@ public class RSAUtil {
      * @throws Exception
      */
     public static String encryptToString(String text, Key key) throws BadPaddingException, UnsupportedEncodingException, IllegalBlockSizeException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-        byte[] en = RSAUtil.encryptToBytes(text, key);
+        byte[] en = encryptToBytes(text, key);
         return Base64.toBase64String(en);
     }
 
@@ -277,7 +277,7 @@ public class RSAUtil {
      * @throws Exception
      */
     private static String decryptToString(byte[] text, Key key) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-        return new String(RSAUtil.decrypt(text, key));
+        return new String(decrypt(text, key));
     }
 
     /**

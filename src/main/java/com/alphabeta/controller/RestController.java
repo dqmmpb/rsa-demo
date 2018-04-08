@@ -115,7 +115,7 @@ public class RestController extends BaseController {
 
     @RequestMapping(value = "/v1/send", method = RequestMethod.POST)
     @ResponseBody
-    public BaseResult receiveMessage(HttpServletRequest request, @RequestParam(name = "message") String message, @RequestParam(name = "cPub") String cPub, @RequestParam(name = "cSign") String cSign) {
+    public BaseResult receiveMessage(HttpServletRequest request, @RequestParam(name = "message") String message, @RequestParam(name = "cPub") String cPub, @RequestParam(name = "cSign", required = false) String cSign) {
 
         BaseResult result = new BaseResult();
 
